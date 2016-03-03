@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Alarm Clock</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="title_activity_set_alarm">Set Alarm</string>
+    <string name="action_select_calenders">Calenders</string>
+
+    // Google api key for Android
+    <!--<string name="GOOGLE_API_KEY">AIzaSyDAHnyyEhXMvtd-rGn1ii2qQ-NfmwC7rDI</string>-->
+
+    // Google api key for browser
+    <string name="SHA1">71:95:64:24:4E:29:13:BB:ED:4E:0D:80:D2:3D:4A:4E:91:63:87:06</string>
+    <string name="GOOGLE_MAPS_DIRECTION_API_KEY">AIzaSyDHRObgKZb24znTTZJXpxX7pZilCj2WDQE</string>
+    <string name="GOOGLE_MAPS_DISTANCE_MATRIX_API_KEY">AIzaSyBuopsp7pmgOfLRiOJ_7qG81vha0PYuouI</string>
+    <string name="GOOGLE_PLACES_API_KEY">AIzaSyA1boUOZivSQmGNmNB-DGLoYFRzwv3nP5s</string>
+
+    <string name="action_search">Search</string>
+</resources>
