@@ -5,23 +5,18 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.AlarmClock;
 import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,10 +24,10 @@ import android.widget.Toast;
 
 import com.example.obroshi.alarmclock.R;
 import com.example.obroshi.alarmclock.controller.Controller;
+import com.example.obroshi.alarmclock.model.CalendarEvent;
 import com.example.obroshi.alarmclock.model.Constants;
 import com.example.obroshi.alarmclock.model.GetDistanceMatrixData;
 import com.google.android.gms.maps.model.LatLng;
-import com.vstechlab.easyfonts.EasyFonts;
 
 import org.joda.time.DateTime;
 
@@ -41,10 +36,10 @@ import java.util.List;
 public class AlarmDataFragment extends Fragment {
 
     private static final String TAG = AlarmDataFragment.class.getSimpleName();
-    public static final String RAW_STARTING_TIME = "rawStartingTime";
+    private static final String KEY_EVENT = "event";
 
+    private CalendarEvent mEvent;
     private LinearLayout mEventInfoLayout;
-    private String mEventID;
     private TextView mTitle;
     private TextView mFormattedStartTime;
     private TextView mMonthInYear;
@@ -64,20 +59,20 @@ public class AlarmDataFragment extends Fragment {
     private LinearLayout mDetailsLayout;
     private ImageView mAddAlarmBtn;
 
-
     private Controller.onAlarmAdded mAddAlarmListener;
     private double mDestinationLatitude;
     private double mDestinationLongitude;
 
     private GetDistanceMatrixData.DistanceMatrixCallback callback;
 
-    private long mRawStartingTime;
     private boolean mIsAddressValid = false;
 
-
-    // Empty Constructor
-    public AlarmDataFragment() {
-
+    public static Fragment getFragment(CalendarEvent event) {
+        Fragment fragment = new AlarmDataFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(AlarmDataFragment.KEY_EVENT, event);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -114,7 +109,7 @@ public class AlarmDataFragment extends Fragment {
         mEventInfoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.valueOf(mEventID));
+                Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Long.valueOf(mEvent.getEvent_ID()));
                 Intent openEventIntent = new Intent(Intent.ACTION_VIEW);
                 openEventIntent.setData(uri);
                 startActivity(openEventIntent);
@@ -232,7 +227,7 @@ public class AlarmDataFragment extends Fragment {
     }
 
     public String calculateDepartureTime(int originMinutes, int destinationMinutes) {
-        long departureTime = (mRawStartingTime - ((originMinutes + destinationMinutes) * 60 * 1000));
+        long departureTime = (this.mEvent.getRawStartingTime() - ((originMinutes + destinationMinutes) * 60 * 1000));
         return String.valueOf(departureTime);
     }
 
@@ -241,32 +236,31 @@ public class AlarmDataFragment extends Fragment {
         super.onStart();
         Bundle args = getArguments();
         if (args != null) {
-            mEventID = args.getString(CalendarContract.Events._ID);
-            mTitle.setText(args.getString(CalendarContract.Events.TITLE));
-            mMonthInYear.setText(args.getString(Constants.MONTH_IN_YEAR));
-            mDayInMonth.setText(args.getString(Constants.DAY_IN_MONTH));
-            mFormattedStartTime.setText(args.getString(CalendarContract.Events.DTSTART));
-            String endTime = args.getString(CalendarContract.Events.DTEND);
-            if (endTime.isEmpty()) {
+            this.mEvent = args.getParcelable(KEY_EVENT);
+            mTitle.setText(this.mEvent.getTitle());
+            mMonthInYear.setText(DisplayHelper.getMonthShortName(mMonthInYear, this.mEvent.getMonthOfYear()));
+            mDayInMonth.setText(DisplayHelper.getDayInMonth(this.mEvent.getDayInMonth()));
+            mFormattedStartTime.setText(this.mEvent.getStartingTime());
+            if (TextUtils.isEmpty(this.mEvent.getEndingTime())) {
                 mEndTime.setVisibility(View.GONE);
             } else {
                 mEndTime.setVisibility(View.VISIBLE);
-                mEndTime.setText(" - " + endTime);
+                mEndTime.setText(String.format(" - %s" ,this.mEvent.getEndingTime()));
             }
-            mRawStartingTime = args.getLong(RAW_STARTING_TIME);
-            String location = args.getString(CalendarContract.Events.EVENT_LOCATION);
-            mDivider.setBackgroundColor(args.getInt(CalendarContract.Events.CALENDAR_COLOR));
-            mIsAddressValid = getLatLongFromAddress(location);
-            if (!location.isEmpty()) {
-                mLocation.setText(location);
-            } else {
+            mDivider.setBackgroundColor(this.mEvent.getCalendarColor());
+            String location = this.mEvent.getLocation();
+            if (location.isEmpty()) {
                 mLocation.setVisibility(View.GONE);
+                mIsAddressValid = false;
 //                mLocation.setTextColor(Color.RED);
 //                showGooglePlacesDialog();
+            } else {
+                mIsAddressValid = getLatLongFromAddress(location);
+                mLocation.setText(location);
             }
 //            mCalendarName.setText("(" + args.getString(CalendarContract.Events.CALENDAR_DISPLAY_NAME) + ")");
         }
-        Controller.getInstance().setRawStartingTime(String.valueOf(mRawStartingTime));
+        Controller.getInstance().setRawStartingTime(this.mEvent.getRawStartingTime());
     }
 
     @Override

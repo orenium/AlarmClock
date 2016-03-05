@@ -22,7 +22,6 @@ public class Controller {
     private GetCalendarData mGetCalendarData;
     private DataStorage mDataStorage;
     private WakeUpCalculation mWakeUpCalculation;
-    private AlarmDataFragment mAlarmDataFragment;
 
     private static Controller instance = null;
 
@@ -41,7 +40,7 @@ public class Controller {
     }
 
     public interface onEventSelectedListener {
-        public void onEventSelected(String id, String title, String monthShortName, String dayInMonth, String startTime ,String endTime, long rawStartingTime, String location, String calendarName, int calendar);
+        public void onEventSelected(CalendarEvent event);
         public void onLocationNotValid();
     }
 
@@ -61,7 +60,6 @@ public class Controller {
         mGetCalendarData = new GetCalendarData();
         mDataStorage = new DataStorage();
         mWakeUpCalculation = new WakeUpCalculation();
-        mAlarmDataFragment = new AlarmDataFragment();
     }
 
 //    public void showSelectedEvent(String id, String title, long startTime, String endTime, String location, String calendarName){
@@ -125,11 +123,11 @@ public class Controller {
         mWakeUpCalculation.getDuration(context, currentLocation, destination, departureTime, travelMode, callback);
     }
 
-    public String getRawStartingTime() {
+    public long getRawStartingTime() {
         return mDataStorage.getRawStartingTime();
     }
 
-    public void setRawStartingTime(String rawStartingTime) {
+    public void setRawStartingTime(long rawStartingTime) {
         mDataStorage.setRawStartingTime(rawStartingTime);
     }
 }

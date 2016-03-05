@@ -11,7 +11,7 @@ public class DataStorage {
     private String mDurationValue;
     private String mDurationInTrafficText;
     private String mDurationInTrafficValue;
-    private String mRawStartingTime;
+    private long mRawStartingTime;
 
     private static DataStorage instance = null;
 
@@ -30,11 +30,11 @@ public class DataStorage {
         this.mDurationValue = mDurationValue;
     }
 
-    public String getRawStartingTime() {
+    public long getRawStartingTime() {
         return mRawStartingTime;
     }
 
-    public void setRawStartingTime(String rawStartingTime) {
+    public void setRawStartingTime(long rawStartingTime) {
         mRawStartingTime = rawStartingTime;
     }
 

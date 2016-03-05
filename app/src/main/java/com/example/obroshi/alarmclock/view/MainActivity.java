@@ -172,20 +172,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onEventSelected(String id, String title, String monthShortName, String dayInMonth, String startTime ,String endTime, long rawStartingTime, String location, String calendarName, int calendarColor) {
-        mFragment = new AlarmDataFragment();
-        Bundle args = new Bundle();
-        args.putString(CalendarContract.Events._ID, id);
-        args.putString(CalendarContract.Events.TITLE, title);
-        args.putString(Constants.MONTH_IN_YEAR, monthShortName);
-        args.putString(Constants.DAY_IN_MONTH, dayInMonth);
-        args.putString(CalendarContract.Events.DTSTART, startTime);
-        args.putString(CalendarContract.Events.DTEND, endTime);
-        args.putLong(AlarmDataFragment.RAW_STARTING_TIME, rawStartingTime);
-        args.putString(CalendarContract.Events.EVENT_LOCATION, location);
-        args.putString(CalendarContract.Events.CALENDAR_DISPLAY_NAME, calendarName);
-        args.putInt(CalendarContract.Events.CALENDAR_COLOR, calendarColor);
-        mFragment.setArguments(args);
+    public void onEventSelected(CalendarEvent event) {
+        mFragment = AlarmDataFragment.getFragment(event);
         FragmentTransaction ft = mFragmentManager.beginTransaction();
         ft.replace(R.id.container, mFragment).addToBackStack(null).commit();
     }

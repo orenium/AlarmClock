@@ -85,7 +85,7 @@ public class EventsListFragment extends Fragment {
             }
         });
         mRecyclerView.hasFixedSize();
-        mAdapter = new EventsAdapter(getContext(), mEventsList);
+        mAdapter = new EventsAdapter(mEventsList);
         mRecyclerView.setAdapter(mAdapter);
 
         // Check if the user already entered custom time settings
@@ -112,18 +112,7 @@ public class EventsListFragment extends Fragment {
                     Log.d(TAG, "Item " + position + " was clicked");
                     CalendarEvent event = mEventsList.get(position);
                     if (mSelectedListener != null) {
-                        mSelectedListener.onEventSelected(
-                                event.getEvent_ID(),
-                                event.getTitle(),
-                                event.getMonthShortName(),
-                                event.getDayInMonth(),
-                                event.getFormattedStartingTime(),
-                                event.getEndingTime(),
-                                event.getRawStartingTime(),
-                                event.getLocation(),
-                                event.getCalendarName(),
-                                event.getCalendarColor()
-                        );
+                        mSelectedListener.onEventSelected(event);
                     }
                 } else {
                     Log.d(TAG, "Invalid input");

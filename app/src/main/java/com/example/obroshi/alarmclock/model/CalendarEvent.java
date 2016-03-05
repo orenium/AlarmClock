@@ -1,5 +1,8 @@
 package com.example.obroshi.alarmclock.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.joda.time.DateTime;
 
 import java.sql.Date;
@@ -10,20 +13,18 @@ import java.util.TimeZone;
 /**
  * Created by Lital Noa on 28/01/2016.
  */
-public class CalendarEvent {
+public class CalendarEvent implements Parcelable {
     private final String TAG = CalendarEvent.class.getSimpleName();
-    private String mCalendarID;
-    private String mEventID;
-    private String mTitle;
-    private long mRawStartingTime;
-    private String mEndingTime;
+    private final String mCalendarID;
+    private final String mEventID;
+    private final String mTitle;
+    private final long mRawStartingTime;
+    private final String mEndingTime;
     private String mLocation;
-    private Boolean mAllDayEvent;
-    private String mDescription;
-    private String mCalendarName;
-    private int mCalendarColor;
-    private String mDayInMonth;
-    private DateTime mDate;
+    private final String mDescription;
+    private final String mCalendarName;
+    private final int mCalendarColor;
+    private final DateTime mDate;
     private String mAlarmTime;
     private boolean mHasAlarm;
 
@@ -41,49 +42,31 @@ public class CalendarEvent {
         this.setHasAlarm(false);
     }
 
+    private CalendarEvent(Parcel in) {
+        this.mCalendarID = in.readString();
+        this.mEventID = in.readString();
+        this.mTitle = in.readString();
+        this.mEndingTime = in.readString();
+        this.mLocation = in.readString();
+        this.mDescription = in.readString();
+        this.mCalendarName = in.readString();
+        this.mAlarmTime = in.readString();
+        this.mHasAlarm = (1 == in.readInt());
+        this.mCalendarColor = in.readInt();
+        this.mRawStartingTime = in.readLong();
+        this.mDate = new DateTime(in.readLong());
+    }
+
     public int getCalendarColor() {
         return mCalendarColor;
     }
 
-    public void setCalendarColor(int calendarColor) {
-        this.mCalendarColor = calendarColor;
+    public int getMonthOfYear() {
+        return this.mDate.getMonthOfYear();
     }
 
-    public String getMonthShortName() {
-        switch (mDate.getMonthOfYear()) {
-            case 1:
-                return "jan";
-            case 2:
-                return "feb";
-            case 3:
-                return "mar";
-            case 4:
-                return "apr";
-            case 5:
-                return "may";
-            case 6:
-                return "jun";
-            case 7:
-                return "jul";
-            case 8:
-                return "aug";
-            case 9:
-                return "sep";
-            case 10:
-                return "oct";
-            case 11:
-                return "nov";
-            case 12:
-                return "dec";
-            default:
-                break;
-        }
-        return null;
-    }
-
-    public String getDayInMonth() {
-        int day = mDate.getDayOfMonth();
-        return day < 10 ? "0"+day: java.lang.String.valueOf(day);
+    public int getDayInMonth() {
+        return mDate.getDayOfMonth();
     }
 
     public boolean isHasAlarm() {
@@ -107,49 +90,25 @@ public class CalendarEvent {
         return mCalendarName;
     }
 
-    public void setCalendarName(String mCalendarName) {
-        this.mCalendarName = mCalendarName;
-    }
 
     public String getCalendar_ID() {
         return mCalendarID;
-    }
-
-    public void setCalendar_ID(String mCalendar_ID) {
-        this.mCalendarID = mCalendar_ID;
     }
 
     public String getEvent_ID() {
         return mEventID;
     }
 
-    public void setEvent_ID(String mEvent_ID) {
-        this.mEventID = mEvent_ID;
-    }
-
     public String getTitle() {
         return mTitle;
     }
 
-    public void setTitle(String mSubject) {
-        this.mTitle = mSubject;
-    }
-
-    public String getFormattedStartingTime() {
-        int hh = mDate.getHourOfDay();
-        int mm = mDate.getMinuteOfHour();
-        String hour = hh > 9 ?java.lang.String.valueOf(hh) : "0"+ java.lang.String.valueOf(hh);
-        String min = mm > 9 ?java.lang.String.valueOf(mm) : "0"+ java.lang.String.valueOf(mm);
-        return hour + ":" + min;
+    public String getStartingTime() {
+        return String.format("%02d:%02d", mDate.getHourOfDay(), mDate.getMinuteOfHour());
     }
 
     public long getRawStartingTime() {
         return mRawStartingTime;
-    }
-
-    public void setStartingTime(long startingTime) {
-        this.mRawStartingTime = startingTime;
-
     }
 
     public String getEndingTime() {
@@ -162,10 +121,6 @@ public class CalendarEvent {
         } else return "";
     }
 
-    public void setEndingTime(String mEndingTime) {
-        this.mEndingTime = mEndingTime;
-    }
-
     public String getLocation() {
         return mLocation;
     }
@@ -174,21 +129,41 @@ public class CalendarEvent {
         this.mLocation = mLocation;
     }
 
-    public Boolean getAllDayEvent() {
-        return mAllDayEvent;
-    }
-
-    public void setAllDayEvent(Boolean mAllDayEvent) {
-        this.mAllDayEvent = mAllDayEvent;
-    }
-
     public String getDescription() {
         return mDescription;
     }
 
-    public void setDescription(String desc) {
-        this.mDescription = desc;
+    @Override
+    public int describeContents() {
+        return 0;
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mCalendarID);
+        dest.writeString(mEventID);
+        dest.writeString(mTitle);
+        dest.writeString(mEndingTime);
+        dest.writeString(mLocation);
+        dest.writeString(mDescription);
+        dest.writeString(mCalendarName);
+        dest.writeString(mAlarmTime);
+        dest.writeInt(mHasAlarm ? 1 : 0);
+        dest.writeInt(mCalendarColor);
+        dest.writeLong(mRawStartingTime);
+        dest.writeLong(this.mDate.getMillis());
+    }
+
+    public static final Parcelable.Creator<CalendarEvent> CREATOR
+            = new Parcelable.Creator<CalendarEvent>() {
+        public CalendarEvent createFromParcel(Parcel in) {
+            return new CalendarEvent(in);
+        }
+
+        public CalendarEvent[] newArray(int size) {
+            return new CalendarEvent[size];
+        }
+    };
 }
 
 

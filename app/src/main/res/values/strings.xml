@@ -17,4 +17,32 @@
     <string name="GOOGLE_PLACES_API_KEY">AIzaSyA1boUOZivSQmGNmNB-DGLoYFRzwv3nP5s</string>
 
     <string name="action_search">Search</string>
+
+    <string-array name="months">
+        <item>@string/month_jan</item>
+        <item>@string/month_feb</item>
+        <item>@string/month_mar</item>
+        <item>@string/month_apr</item>
+        <item>@string/month_may</item>
+        <item>@string/month_jun</item>
+        <item>@string/month_jul</item>
+        <item>@string/month_aug</item>
+        <item>@string/month_sep</item>
+        <item>@string/month_oct</item>
+        <item>@string/month_nov</item>
+        <item>@string/month_dec</item>
+    </string-array>
+
+    <string name="month_jan">jan</string>
+    <string name="month_feb">feb</string>
+    <string name="month_mar">mar</string>
+    <string name="month_apr">apr</string>
+    <string name="month_may">may</string>
+    <string name="month_jun">jun</string>
+    <string name="month_jul">jul</string>
+    <string name="month_aug">aug</string>
+    <string name="month_sep">sep</string>
+    <string name="month_oct">oct</string>
+    <string name="month_nov">nov</string>
+    <string name="month_dec">dec</string>
 </resources>
