@@ -5,8 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.obroshi.alarmclock.model.CalendarEvent;
@@ -14,7 +12,7 @@ import com.example.obroshi.alarmclock.R;
 
 import java.util.List;
 
-class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsViewHolder> {
+class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
     private List<CalendarEvent> mEventsList;
     private Context mContext;
 
@@ -24,14 +22,14 @@ class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsViewHolder>
     }
 
     @Override
-    public EventsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.calendar_single_event, null);
-        EventsViewHolder holder = new EventsViewHolder(view);
+        EventViewHolder holder = new EventViewHolder(view);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(EventsViewHolder holder, int position) {
+    public void onBindViewHolder(EventViewHolder holder, int position) {
         CalendarEvent event = mEventsList.get(position);
         holder.monthInYear.setText(event.getMonthShortName());
         holder.dayInMonth.setText(event.getDayInMonth());
@@ -64,7 +62,7 @@ class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsViewHolder>
         return (mEventsList != null ? mEventsList.size() : 0);
     }
 
-    public class EventsViewHolder extends RecyclerView.ViewHolder {
+    public class EventViewHolder extends RecyclerView.ViewHolder {
 
         protected TextView monthInYear;
         protected TextView dayInMonth;
@@ -76,7 +74,7 @@ class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsViewHolder>
 //        protected LinearLayout layout;
 //        protected TextView calendarName;
 
-        public EventsViewHolder(View view) {
+        public EventViewHolder(View view) {
             super(view);
 //            layout = (LinearLayout) view.findViewById(R.id.eventInfoLayout);
             monthInYear = (TextView) view.findViewById(R.id.monthInYear);
