@@ -65,7 +65,7 @@ public class AlarmDataFragment extends Fragment {
     private ImageView mAddAlarmBtn;
 
 
-    private Controller.onEventSelectedListener mSelectedListener;
+    private Controller.onAlarmAdded mAddAlarmListener;
     private double mDestinationLatitude;
     private double mDestinationLongitude;
 
@@ -130,7 +130,7 @@ public class AlarmDataFragment extends Fragment {
 
                     Controller.getInstance().calculateWakeUp(mOriginMinutes, mDestinationMinutes, new Controller.WakeUpDataCallback() {
                         @Override
-                        public void onWakeUpTimeReceived(long rawWakeupTime, String formattedWakupTime, final String hours, final String minutes) {
+                        public void onWakeUpTimeReceived(long rawWakeupTime, final String formattedWakupTime, final String hours, final String minutes) {
 //                            Toast.makeText(getContext(), "Duration: " + durationText + " (" + durationInTrafficText + " with traffic)", Toast.LENGTH_LONG).show();
                             mWakeUpTime.setText(formattedWakupTime);
                             mWakeUpTime.setVisibility(View.VISIBLE);
@@ -138,11 +138,15 @@ public class AlarmDataFragment extends Fragment {
                             mAddAlarmBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
-                                    intent.putExtra(AlarmClock.EXTRA_MESSAGE, mTitle.getText());
-                                    intent.putExtra(AlarmClock.EXTRA_HOUR, Integer.valueOf(hours));
-                                    intent.putExtra(AlarmClock.EXTRA_MINUTES, Integer.valueOf(minutes));
-                                    startActivity(intent);
+//                                    Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
+//                                    intent.putExtra(AlarmClock.EXTRA_MESSAGE, mTitle.getText());
+//                                    intent.putExtra(AlarmClock.EXTRA_HOUR, Integer.valueOf(hours));
+//                                    intent.putExtra(AlarmClock.EXTRA_MINUTES, Integer.valueOf(minutes));
+//                                    startActivity(intent);
+                                    if (mAddAlarmListener != null) {
+                                        mAddAlarmListener.onAlarmAdded(formattedWakupTime, mTitle.getText().toString());
+                                    }
+
                                 }
                             });
 //                            mLocationMsg.setOnClickListener(new View.OnClickListener() {
@@ -272,14 +276,13 @@ public class AlarmDataFragment extends Fragment {
     }
 
     public void showGooglePlacesDialog() {
-        mSelectedListener.onLocationNotValid();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         Activity activity = (Activity) context;
-        mSelectedListener = (Controller.onEventSelectedListener) activity;
+        mAddAlarmListener = (Controller.onAlarmAdded) activity;
     }
 
     private boolean getLatLongFromAddress(String address) {

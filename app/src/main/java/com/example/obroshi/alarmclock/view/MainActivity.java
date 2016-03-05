@@ -5,15 +5,20 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 
 import com.example.obroshi.alarmclock.R;
 import com.example.obroshi.alarmclock.controller.Controller;
+import com.example.obroshi.alarmclock.model.CalendarEvent;
 import com.example.obroshi.alarmclock.model.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -21,12 +26,14 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Controller.onEventSelectedListener{
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Controller.onEventSelectedListener, Controller.onAlarmAdded {
 
     private final String TAG = MainActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
     private Controller.LocationCallback mLocationCallback;
     private Fragment mFragment;
+    private FloatingActionButton mFab;
+    private FragmentManager mFragmentManager;
 
     final int REQUEST_CODE_ASK_LOCATION_PERMISSIONS = 111;
     final int REQUEST_CODE_ASK_READ_CALENDAR_PERMISSIONS = 123;
@@ -37,6 +44,23 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mFragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = mFragmentManager.beginTransaction();
+        mFragment = new AlarmsListFragment();
+        ft.add(R.id.container, mFragment, "AlarmsListFragment")
+                .commit();
+        mFab = (FloatingActionButton) findViewById(R.id.addAlarmFab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction ft = mFragmentManager.beginTransaction();
+                mFragment = new EventsListFragment();
+                ft.replace(R.id.container, mFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
         if (mGoogleApiClient == null) {
             // Create a GoogleApiClient instance
@@ -114,10 +138,10 @@ public class MainActivity extends AppCompatActivity implements
             case REQUEST_CODE_ASK_READ_CALENDAR_PERMISSIONS:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(TAG, "Calendar permissions granted");
-                    android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
-                    mFragment = new EventsListFragment();
-                    if (fragmentManager.findFragmentByTag("EventsListFragment") == null)
-                        fragmentManager.beginTransaction().add(R.id.container, mFragment, "EventsListFragment").commitAllowingStateLoss();
+//                    FragmentManager fragmentManager = getSupportFragmentManager();
+//                    mFragment = new EventsListFragment();
+//                    if (fragmentManager.findFragmentByTag("EventsListFragment") == null)
+//                        fragmentManager.beginTransaction().add(R.id.container, mFragment, "EventsListFragment").commitAllowingStateLoss();
                 } else {
                     Log.d(TAG, "Calendar permissions denied, request popup is shown");
                     showCalendarPermissionsPopUp();
@@ -162,7 +186,8 @@ public class MainActivity extends AppCompatActivity implements
         args.putString(CalendarContract.Events.CALENDAR_DISPLAY_NAME, calendarName);
         args.putInt(CalendarContract.Events.CALENDAR_COLOR, calendarColor);
         mFragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, mFragment).addToBackStack("alarmFrag").commit();
+        FragmentTransaction ft = mFragmentManager.beginTransaction();
+        ft.replace(R.id.container, mFragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -171,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements
 //                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         mFragment = new SearchAddressFragment();
-        getSupportFragmentManager().beginTransaction().add(R.id.container, mFragment).addToBackStack("SearchAddressFragment").commit();
+//        getSupportFragmentManager().beginTransaction().replace(R.id.container, mFragment).addToBackStack("SearchAddressFragment").commit();
 
 //        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
 //            @Override
@@ -187,6 +212,22 @@ public class MainActivity extends AppCompatActivity implements
 //                Log.d(TAG, "An error occurred: " + status);
 //            }
 //        });
+    }
+
+    @Override
+    public void onAlarmAdded(String time, String label) {
+        mFragment = new AlarmsListFragment();
+        Bundle args = new Bundle();
+        args.putString(AlarmsListFragment.ALARM_TIME, time);
+        args.putString(AlarmsListFragment.LABEL, label);
+        mFragment.setArguments(args);
+//        if (mFragmentManager.findFragmentByTag("AlarmsListFragment") == null)
+        FragmentTransaction ft = mFragmentManager.beginTransaction();
+        if (mFragmentManager.findFragmentByTag("AlarmsListFragment") != null)
+            ft.replace(R.id.container, mFragment).commit();
+        else {
+
+        }
     }
 
 //    @Override

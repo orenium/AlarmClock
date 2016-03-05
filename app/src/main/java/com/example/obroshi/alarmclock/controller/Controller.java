@@ -45,6 +45,9 @@ public class Controller {
         public void onLocationNotValid();
     }
 
+    public interface onAlarmAdded{
+        public void onAlarmAdded(String time, String label);
+    }
 
     public static Controller getInstance() {
         if (instance == null) {
