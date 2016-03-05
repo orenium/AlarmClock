@@ -2,6 +2,7 @@ package com.example.obroshi.alarmclock.controller;
 
 import android.content.Context;
 
+import com.example.obroshi.alarmclock.model.AppCalendar;
 import com.example.obroshi.alarmclock.model.CalendarEvent;
 import com.example.obroshi.alarmclock.model.DataStorage;
 import com.example.obroshi.alarmclock.model.GetCalendarData;
@@ -27,7 +28,7 @@ public class Controller {
 
     public interface CalendarCallback {
         public void onDataReceived(List<CalendarEvent> events);
-        public void onCalendarsListReceived(List<String> calendars);
+        public void onCalendarsListReceived(ArrayList<AppCalendar> calendars);
     }
 
     public interface LocationCallback {
@@ -66,8 +67,9 @@ public class Controller {
 //        mAlarmDataFragment.setEventData(id, title, startTime, endTime, location, calendarName);
 //    }
 
-    public void getEventsFromCalendars (Context context, List<String> selectedCalendar, CalendarCallback callback){
-        mGetCalendarData.getEventsFromCalendar(context, selectedCalendar, callback);
+
+    public void getEventsFromCalendars (Context context, List<String> selectedCalendarIds, CalendarCallback callback){
+        mGetCalendarData.getEventsFromCalendar(context, selectedCalendarIds, callback);
     }
 
     public void setCurrentLat(double lat) {

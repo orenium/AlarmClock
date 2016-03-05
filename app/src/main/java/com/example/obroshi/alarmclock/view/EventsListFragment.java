@@ -1,12 +1,12 @@
 package com.example.obroshi.alarmclock.view;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,23 +23,24 @@ import android.widget.Toast;
 
 import com.example.obroshi.alarmclock.R;
 import com.example.obroshi.alarmclock.controller.Controller;
+import com.example.obroshi.alarmclock.model.AppCalendar;
 import com.example.obroshi.alarmclock.model.CalendarEvent;
 import com.example.obroshi.alarmclock.model.Constants;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class EventsListFragment extends Fragment {
 
     private static final String TAG = EventsListFragment.class.getSimpleName();
-    //    private static final int LOADER_ID = 1;
-    private List<String> mAllCalendarsList = null;
-    private List<String> mSelectedCalendars = null;
+    private static final String PARAM_SELECTED_CALENDARS = "calendars";
     private List<CalendarEvent> mEventsList;
+    private List<String> mSelectedIds;
     private EventsAdapter mAdapter;
     private EditText mOriginMinutes;
     private EditText mDestinationMinutes;
-    private ContentResolver mContentResolver;
     private RecyclerView mRecyclerView;
     private Controller.onEventSelectedListener mSelectedListener;
 
@@ -125,6 +126,17 @@ public class EventsListFragment extends Fragment {
             }
         }));
 
+        mSelectedIds = new ArrayList<>();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (preferences.contains(PARAM_SELECTED_CALENDARS)) {
+            Set<String> selected = preferences.getStringSet(PARAM_SELECTED_CALENDARS, null);
+            if (null != selected) {
+                for (String calendarId : selected) {
+                    mSelectedIds.add(calendarId);
+                }
+            }
+        }
+
         mCalendarCallback = new Controller.CalendarCallback() {
             @Override
             public void onDataReceived(List<CalendarEvent> events) {
@@ -140,14 +152,40 @@ public class EventsListFragment extends Fragment {
             }
 
             @Override
-            public void onCalendarsListReceived(List<String> calendars) {
-                if (mSelectedCalendars != null)
-                    Controller.getInstance().getEventsFromCalendars(getContext(), mSelectedCalendars, mCalendarCallback);
-                else
-                    showCalendarSelectionDialog(calendars);
+            public void onCalendarsListReceived(ArrayList<AppCalendar> calendars) {
+                setSelectedCalendars(calendars);
+                showCalendarDialog(calendars);
             }
         };
-        Controller.getInstance().getCalendarsList(getContext(), mCalendarCallback);
+        if (mSelectedIds.size() == 0) {
+            Controller.getInstance().getCalendarsList(getContext(), mCalendarCallback);
+        } else {
+            Controller.getInstance().getEventsFromCalendars(getContext(), mSelectedIds, mCalendarCallback);
+        }
+    }
+
+    private void saveSelectedCalendars(List<AppCalendar> calendarsList) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mSelectedIds.clear();
+        Set<String> selected = new HashSet<>();
+        for (AppCalendar calendar : calendarsList) {
+            if (calendar.isSelected()) {
+                mSelectedIds.add(String.valueOf(calendar.getId()));
+                selected.add(String.valueOf(calendar.getId()));
+            }
+        }
+        preferences.edit().putStringSet(PARAM_SELECTED_CALENDARS, selected).apply();
+    }
+
+    /**
+     * Mark which of the AppCalendars is selected based on the SelectedIds list that is read from the preferences
+     *
+     * @param calendars
+     */
+    private void setSelectedCalendars(ArrayList<AppCalendar> calendars) {
+        for (AppCalendar calendar : calendars) {
+            calendar.setSelected(mSelectedIds.contains(String.valueOf(calendar.getId())));
+        }
     }
 
     @Override
@@ -159,11 +197,11 @@ public class EventsListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                Controller.getInstance().getEventsFromCalendars(getContext(), mSelectedCalendars, mCalendarCallback);
+                Controller.getInstance().getEventsFromCalendars(getContext(), mSelectedIds, mCalendarCallback);
                 return true;
 
             case R.id.action_select_calenders:
-                showCalendarSelectionDialog(mAllCalendarsList);
+                showCalendarDialog(null);
                 return true;
 
 //            case R.id.action_settings:
@@ -173,36 +211,57 @@ public class EventsListFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showCalendarSelectionDialog(final List<String> calendars) {
-        mAllCalendarsList = calendars;
-        final CharSequence[] calendarsList = mAllCalendarsList.toArray(new CharSequence[mAllCalendarsList.size()]);
-        final boolean[] selectedItems = new boolean[calendarsList.length];   // selected items only
-        mSelectedCalendars = new ArrayList<>();
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Select Calendars")
-                .setMultiChoiceItems(calendarsList, selectedItems, new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int position, boolean isChecked) {
-                        selectedItems[position] = isChecked;
-                        if (selectedItems[position]) {
-                            mSelectedCalendars.add(calendarsList[position].toString());
+    private void showCalendarDialog(final List<AppCalendar> calendars) {
+        if (null == calendars) {
+            Controller.getInstance().getCalendarsList(getContext(), mCalendarCallback);
+        } else {
+            int size = calendars.size();
+            final CharSequence[] calendarsList = new CharSequence[size];
+            final boolean[] selectedItems = new boolean[size];   // selected items only
+            for (int index = 0; index < size; index++) {
+                AppCalendar appCalendar = calendars.get(index);
+                calendarsList[index] = appCalendar.getDisplayName();
+                selectedItems[index] = appCalendar.isSelected();
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Select Calendars")
+                    .setMultiChoiceItems(calendarsList, selectedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int position, boolean isChecked) {
+//                        selectedItems[position] = isChecked;
+//                        if (selectedItems[position]) {
+//                            mSelectedCalendars.add(calendarsList[position].toString());
+//                        }
+                            calendars.get(position).setSelected(isChecked);
                         }
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (mSelectedCalendars.size() == 0) { // none of the calendar selected
-                            Toast.makeText(getActivity(), " At least 1 calender should be selected", Toast.LENGTH_SHORT).show();
-                            showCalendarSelectionDialog(mAllCalendarsList);
-                        } else {
-                            Log.d(TAG, mSelectedCalendars.size() + " calendars selected");
-                            Controller.getInstance().getEventsFromCalendars(getActivity(), mSelectedCalendars, mCalendarCallback);
-                            dialog.dismiss();
+                    })
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            int selected = countSelectedCalendars(calendars);
+                            if (selected == 0) { // none of the calendar selected
+                                Toast.makeText(getActivity(), " At least 1 calender should be selected", Toast.LENGTH_SHORT).show();
+                                showCalendarDialog(calendars);
+                            } else {
+                                Log.d(TAG, selected + " calendars selected");
+                                saveSelectedCalendars(calendars);
+                                Controller.getInstance().getEventsFromCalendars(getActivity(), mSelectedIds, mCalendarCallback);
+                                dialog.dismiss();
+                            }
                         }
-                    }
-                })
-                .create().show();
+                    })
+                    .create().show();
+        }
+    }
+
+    private int countSelectedCalendars(List<AppCalendar> calendars) {
+        int selected = 0;
+        for (AppCalendar calendar : calendars) {
+            if (calendar.isSelected()) {
+                ++selected;
+            }
+        }
+        return selected;
     }
 
 

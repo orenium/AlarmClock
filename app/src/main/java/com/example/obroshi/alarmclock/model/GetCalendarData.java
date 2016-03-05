@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.CalendarContract;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.obroshi.alarmclock.controller.Controller;
@@ -21,13 +22,11 @@ public class GetCalendarData {
 
 
     public void getCalendarsList(Context context, Controller.CalendarCallback callback) {
-        ArrayList<String> calendarsList = new ArrayList<>();
+        ArrayList<AppCalendar> calendarsList = new ArrayList<>();
 
         String[] projection = new String[]{
                 CalendarContract.Calendars._ID,
                 CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
-                CalendarContract.Calendars.ACCOUNT_NAME,
-                CalendarContract.Calendars.ACCOUNT_TYPE,
                 CalendarContract.Calendars.CALENDAR_COLOR};
 
         ContentResolver calResolver = context.getContentResolver();
@@ -40,13 +39,15 @@ public class GetCalendarData {
                     CalendarContract.Calendars._ID + " ASC");
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
+                    int idColumn = cursor.getColumnIndex(CalendarContract.Calendars._ID);
+                    int nameColumn = cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME);
+                    int colorColumns = cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_COLOR);
                     do {
-                        long id = Long.valueOf(cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars._ID)));
-                        String displayName = cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME));
-                        String accountType = cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_TYPE));
-//                    String calendarColor = cursor.getString(cursor.getColumnIndex(CalendarContract.Calendars.CALENDAR_COLOR));
-                        Log.d(TAG, "Calendar id: " + id + " display name: " + displayName + " type: " + accountType);
-                        calendarsList.add(displayName);
+                        long id = Long.valueOf(cursor.getString(idColumn));
+                        String displayName = cursor.getString(nameColumn);
+                        int calendarColor = cursor.getInt(colorColumns);
+                        Log.d(TAG, "Calendar id: " + id + " display name: " + displayName);
+                        calendarsList.add(new AppCalendar(id, displayName, calendarColor));
                     } while (cursor.moveToNext());
                 }
                 cursor.close();
@@ -55,12 +56,9 @@ public class GetCalendarData {
         }
     }
 
-    public CalendarEvent getSingleEvent(int position){
-        CalendarEvent event = mEventsList.get(position);
-        return event;
-    }
-
-    public void getEventsFromCalendar(Context context, List<String> selectedCalendarsDisplayName, Controller.CalendarCallback callback) {
+    public void getEventsFromCalendar(Context context,
+                                      List<String> calendarIds,
+                                      Controller.CalendarCallback callback) {
         List<CalendarEvent> eventsList = new ArrayList<>();
         String[] projection = new String[]{
                 CalendarContract.Events.ALL_DAY,
@@ -76,16 +74,10 @@ public class GetCalendarData {
                 CalendarContract.Events.RRULE,
                 CalendarContract.Events.CALENDAR_DISPLAY_NAME};
 
-        StringBuilder selection = new StringBuilder();
-        selection.append(CalendarContract.Events.CALENDAR_DISPLAY_NAME + "=?");
-        String[] selectionArg = new String[selectedCalendarsDisplayName.size()];
-        selectionArg = selectedCalendarsDisplayName.toArray(selectionArg);
-        if (selectedCalendarsDisplayName.size() > 1) {
-            for (int i = 0; i < selectedCalendarsDisplayName.size() - 1; i++) {
-                selection.append(" OR " + CalendarContract.Events.CALENDAR_DISPLAY_NAME + "=?");
-                selectionArg[i] = selectedCalendarsDisplayName.get(i);
-            }
-        }
+//        String[] selectionArg = new String[]{TextUtils.join(", ", calendarIds)};
+        String selection = CalendarContract.Events.CALENDAR_ID + " IN ("+ TextUtils.join(", ", calendarIds) +")";
+        Log.d(TAG, "Events query calendars Id: " + selection);
+        String[] selectionArg = null;
 
         // Read calendar permissions
         int hasReadCalendarPermissions = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR);
@@ -93,7 +85,7 @@ public class GetCalendarData {
             ContentResolver contentResolver = context.getContentResolver();
             Cursor cursor = contentResolver.query(CalendarContract.Events.CONTENT_URI,
                     projection,
-                    selection.toString(),
+                    selection,
                     selectionArg,
                     CalendarContract.Events.DTSTART + " ASC",
                     null);
