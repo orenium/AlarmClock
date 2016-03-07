@@ -129,8 +129,12 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             myAlarmList.clear();
         }
-        myAlarmList = MyAlarm.listAll(MyAlarm.class);
-        Log.d(TAG, MyAlarm.count(MyAlarm.class) + " alarms found");
+        long count = MyAlarm.count(MyAlarm.class);
+        List<MyAlarm> list = MyAlarm.listAll(MyAlarm.class);
+        for (int i = 0; i < count; i++) {
+            myAlarmList.add(list.get(i));
+        }
+        Log.d(TAG, count + " alarms found");
         if (myAlarmList.size() > 0) {
             mEmptyMsg.setVisibility(View.GONE);
         } else {
