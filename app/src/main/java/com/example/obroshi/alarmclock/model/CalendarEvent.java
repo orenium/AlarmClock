@@ -10,9 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/**
- * Created by Lital Noa on 28/01/2016.
- */
 public class CalendarEvent implements Parcelable {
     private final String TAG = CalendarEvent.class.getSimpleName();
     private final String mCalendarID;

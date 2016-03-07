@@ -4,19 +4,25 @@ package com.example.obroshi.alarmclock.model;
 import android.support.v7.widget.SwitchCompat;
 import android.widget.TextView;
 
-public class MyAlarm {
+import com.orm.SugarRecord;
 
+public class MyAlarm extends SugarRecord{
+
+    private Long mId;
     private String mAlarmTime;
     private String mAlarmLabel;
     private SwitchCompat mAlarmSwitch;
+    private String mEventId;
 
 
-    public MyAlarm(String alarmTime){
+    public MyAlarm(String eventsId, String alarmTime){
+        this.mEventId = eventsId;
         this.mAlarmTime = alarmTime;
 //        mAlarmSwitch.setChecked(true);
     }
 
-    public MyAlarm(String alarmTime, String label){
+    public MyAlarm(String eventsId, String alarmTime, String label){
+        this.mEventId = eventsId;
         this.mAlarmTime = alarmTime;
         this.mAlarmLabel = label;
 //        mAlarmSwitch.setChecked(true);
@@ -44,5 +50,9 @@ public class MyAlarm {
 
     public void setAlarmState(SwitchCompat state) {
         this.mAlarmSwitch = state;
+    }
+
+    public Long getId() {
+        return mId;
     }
 }

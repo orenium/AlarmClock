@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import com.example.obroshi.alarmclock.R;
 import com.example.obroshi.alarmclock.controller.Controller;
@@ -18,20 +17,19 @@ public class AddAlarmActivity extends AppCompatActivity implements Controller.on
     private final String TAG = AddAlarmActivity.class.getSimpleName();
     private Fragment mFragment;
     private FragmentManager mFragmentManager;
-    final int REQUEST_CODE_ASK_LOCATION_PERMISSIONS = 111;
-    final int REQUEST_CODE_ASK_READ_CALENDAR_PERMISSIONS = 123;
+
+    public static final String EVENT_ID = "eventID";
+    public static final String KEY_ALARM_TIME = "alarmTime";
+    public static final String KEY_ALARM_LABEL = "alarmLabel";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_alarm);
-
         mFragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = mFragmentManager.beginTransaction();
         mFragment = new EventsListFragment();
         ft.add(R.id.container, mFragment, "EventsListFragment").commit();
-
-
     }
 
 
@@ -67,24 +65,12 @@ public class AddAlarmActivity extends AppCompatActivity implements Controller.on
     }
 
     @Override
-    public void onAlarmAdded(String time, String label) {
-
+    public void onAlarmAdded(String eventId, String time, String label) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(AlarmDataFragment.KEY_ALARM_TIME, time);
-        returnIntent.putExtra(AlarmDataFragment.KEY_ALARM_TIME, label);
+        returnIntent.putExtra(EVENT_ID, eventId);
+        returnIntent.putExtra(KEY_ALARM_TIME, time);
+        returnIntent.putExtra(KEY_ALARM_LABEL, label);
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
-
-
-//        mFragment = new AlarmsListFragment();
-//        Bundle args = new Bundle();
-//        mFragment.setArguments(args);
-//        if (mFragmentManager.findFragmentByTag("AlarmsListFragment") == null)
-//        FragmentTransaction ft = mFragmentManager.beginTransaction();
-//        if (mFragmentManager.findFragmentByTag("AlarmsListFragment") != null)
-//            ft.replace(R.id.container, mFragment).commit();
-//        else {
-//
-//        }
     }
 }

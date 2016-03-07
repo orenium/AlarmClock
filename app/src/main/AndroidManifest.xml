@@ -31,6 +31,18 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GOOGLE_PLACES_API_KEY" />
+        <meta-data
+            android:name="DATABASE"
+            android:value="alarms.db" />
+        <meta-data
+            android:name="VERSION"
+            android:value="1" />
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true" />
+        <meta-data
+            android:name="DOMAIN_PACKAGE_NAME"
+            android:value="com.example.obroshi.alarmclock" />
 
         <activity
             android:name=".view.AddAlarmActivity"

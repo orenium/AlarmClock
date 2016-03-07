@@ -46,7 +46,7 @@ public class Controller {
     }
 
     public interface onAlarmAdded{
-        public void onAlarmAdded(String time, String label);
+        public void onAlarmAdded(String eventId, String time, String label);
     }
 
     public static Controller getInstance() {

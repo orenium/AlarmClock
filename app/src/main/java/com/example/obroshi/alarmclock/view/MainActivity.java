@@ -59,6 +59,11 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setAdapter(mAdapter);
         mEmptyMsg = (TextView)findViewById(R.id.noAlarmsMsg);
 
+        /*  Get all the items from the alarms.db
+            Source:  https://guides.codepath.com/android/Clean-Persistence-with-Sugar-ORM
+        */
+        myAlarmList = MyAlarm.listAll(MyAlarm.class);
+
         FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.addAlarmFab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,13 +99,17 @@ public class MainActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_ALARM_ACTIVITY_REQUEST_CODE
                 && resultCode == RESULT_OK){
-            String time = data.getStringExtra(AlarmDataFragment.KEY_ALARM_TIME);
-            String label = data.getStringExtra(AlarmDataFragment.KEY_ALARM_LABEL);
+            String eventId = data.getStringExtra(AddAlarmActivity.EVENT_ID);
+            String time = data.getStringExtra(AddAlarmActivity.KEY_ALARM_TIME);
+            String label = data.getStringExtra(AddAlarmActivity.KEY_ALARM_LABEL);
+            MyAlarm alarm;
             if (!label.isEmpty()){
-                myAlarmList.add(new MyAlarm(time, label));
+                alarm = new MyAlarm(eventId, time, label);
             } else {
-                myAlarmList.add(new MyAlarm(time));
+                alarm = new MyAlarm(eventId, time);
             }
+            myAlarmList.add(alarm);
+            alarm.save();    // saved to DB :    http://satyan.github.io/sugar/getting-started.html
             if (myAlarmList.size() > 0){
                 mEmptyMsg.setVisibility(View.GONE);
             } else {

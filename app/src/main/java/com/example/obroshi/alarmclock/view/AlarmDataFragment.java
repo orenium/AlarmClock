@@ -37,8 +37,6 @@ public class AlarmDataFragment extends Fragment {
 
     private static final String TAG = AlarmDataFragment.class.getSimpleName();
     private static final String KEY_EVENT = "event";
-    public static final String KEY_ALARM_TIME = "alarmTime";
-    public static final String KEY_ALARM_LABEL = "alarmLabel";
 
     private CalendarEvent mEvent;
     private LinearLayout mEventInfoLayout;
@@ -142,7 +140,7 @@ public class AlarmDataFragment extends Fragment {
 //                                    startActivity(intent);
 
                                     if (mAddAlarmListener != null) {
-                                        mAddAlarmListener.onAlarmAdded(formattedWakupTime, mTitle.getText().toString());
+                                        mAddAlarmListener.onAlarmAdded(mEvent.getEvent_ID(), formattedWakupTime, mTitle.getText().toString());
                                     }
 
                                 }
@@ -255,13 +253,11 @@ public class AlarmDataFragment extends Fragment {
             if (location.isEmpty()) {
                 mLocation.setVisibility(View.GONE);
                 mIsAddressValid = false;
-//                mLocation.setTextColor(Color.RED);
 //                showGooglePlacesDialog();
             } else {
                 mIsAddressValid = getLatLongFromAddress(location);
                 mLocation.setText(location);
             }
-//            mCalendarName.setText("(" + args.getString(CalendarContract.Events.CALENDAR_DISPLAY_NAME) + ")");
         }
         Controller.getInstance().setRawStartingTime(this.mEvent.getRawStartingTime());
     }

@@ -10,6 +10,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -28,4 +29,5 @@ dependencies {
     compile 'com.android.support:support-v4:23.2.0'
     compile 'joda-time:joda-time:2.9.2'
     compile 'com.android.support:support-v13:23.2.0'
+    compile 'com.github.satyan:sugar:1.4'
 }
