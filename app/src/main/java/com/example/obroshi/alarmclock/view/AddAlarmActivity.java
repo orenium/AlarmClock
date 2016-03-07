@@ -19,7 +19,7 @@ public class AddAlarmActivity extends AppCompatActivity implements Controller.on
     private FragmentManager mFragmentManager;
 
     public static final String EVENT_ID = "eventID";
-    public static final String KEY_ALARM_TIME = "alarmTime";
+    public static final String KEY_RAW_ALARM_TIME = "rawAlarmTime";
     public static final String KEY_ALARM_LABEL = "alarmLabel";
 
     @Override
@@ -65,10 +65,10 @@ public class AddAlarmActivity extends AppCompatActivity implements Controller.on
     }
 
     @Override
-    public void onAlarmAdded(String eventId, String time, String label) {
+    public void onAlarmAdded(String eventId, long rawAlarmTime, String label) {
         Intent returnIntent = new Intent();
+        returnIntent.putExtra(KEY_RAW_ALARM_TIME, rawAlarmTime);
         returnIntent.putExtra(EVENT_ID, eventId);
-        returnIntent.putExtra(KEY_ALARM_TIME, time);
         returnIntent.putExtra(KEY_ALARM_LABEL, label);
         setResult(Activity.RESULT_OK, returnIntent);
         finish();

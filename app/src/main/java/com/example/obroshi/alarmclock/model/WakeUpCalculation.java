@@ -27,7 +27,7 @@ public class WakeUpCalculation {
     public static final int UNABLE_TO_FIND_DURATION = 111;
 
     public void getDuration(Context context, LatLng currentLocation, LatLng destination,
-                            String departureTime , String travelMode, GetDistanceMatrixData.DistanceMatrixCallback callback) {
+                            String departureTime, String travelMode, GetDistanceMatrixData.DistanceMatrixCallback callback) {
         GetDistanceMatrixData getDistanceMatrixData = new GetDistanceMatrixData(context, currentLocation,
                 destination, departureTime, travelMode);
         getDistanceMatrixData.execute(callback);
@@ -40,19 +40,17 @@ public class WakeUpCalculation {
         return eta;
     }
 
-    public void getWakeUpTime(int mOriginMinutes, int mDestinationMinutes, Controller.WakeUpDataCallback callback) {
-        long originMinutes = Long.valueOf(mOriginMinutes);
-        long destinationMinutes = Long.valueOf(mDestinationMinutes);
+    public void getWakeUpTime(long originMinutes, long destinationMinutes, Controller.WakeUpDataCallback callback) {
         long wakeupTime;
         long duration_value = Long.valueOf(Controller.getInstance().getDurationInTrafficValue());
 
         if (duration_value != 0) {
             // If user user didn't supply and destinationTime, the timeAtDestination will be the event's starting time
-            mRawStartingTime = Long.valueOf(Controller.getInstance().getRawStartingTime());
+            mRawStartingTime = Controller.getInstance().getRawStartingTime();
             if (destinationMinutes > 0) {
-                wakeupTime = (mRawStartingTime - (1000*(duration_value + 60*(originMinutes + destinationMinutes))));
+                wakeupTime = (mRawStartingTime - (1000 * (duration_value + 60 * (originMinutes + destinationMinutes))));
             } else {
-                wakeupTime = (mRawStartingTime - (1000*(duration_value + (originMinutes * 60))));
+                wakeupTime = (mRawStartingTime - (1000 * (duration_value + (originMinutes * 60))));
             }
             Date date = new Date(wakeupTime);
 //            DateTime dateTIme = new DateTime(wakeupTime);
@@ -64,7 +62,7 @@ public class WakeUpCalculation {
                 final String wakeUpHour = sdfHours.format(date);
                 SimpleDateFormat sdfMinutes = new SimpleDateFormat("mm", Locale.getDefault());
                 final String wakeUpMinutes = sdfMinutes.format(date);
-                Log.d(TAG, "WAKEUP TIME IS SET TO: " + wakeUpHour + ":" + wakeUpMinutes);
+                Log.d(TAG, "WAKEUP TIME SET TO: " + wakeUpHour + ":" + wakeUpMinutes);
 
                 callback.onWakeUpTimeReceived(wakeupTime, sdf.format(date), wakeUpHour, wakeUpMinutes);
 

@@ -23,6 +23,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
+import com.orm.SugarContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +58,7 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.hasFixedSize();
         mAdapter = new AlarmsAdapter(MainActivity.this, myAlarmList);
         mRecyclerView.setAdapter(mAdapter);
-        mEmptyMsg = (TextView)findViewById(R.id.noAlarmsMsg);
-
-        /*  Get all the items from the alarms.db
-            Source:  https://guides.codepath.com/android/Clean-Persistence-with-Sugar-ORM
-        */
-        myAlarmList = MyAlarm.listAll(MyAlarm.class);
+        mEmptyMsg = (TextView) findViewById(R.id.noAlarmsMsg);
 
         FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.addAlarmFab);
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -94,27 +90,21 @@ public class MainActivity extends AppCompatActivity implements
         };
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_ALARM_ACTIVITY_REQUEST_CODE
-                && resultCode == RESULT_OK){
+                && resultCode == RESULT_OK) {
             String eventId = data.getStringExtra(AddAlarmActivity.EVENT_ID);
-            String time = data.getStringExtra(AddAlarmActivity.KEY_ALARM_TIME);
+            long rawAlarmTime = data.getLongExtra(AddAlarmActivity.KEY_RAW_ALARM_TIME, 0L);
             String label = data.getStringExtra(AddAlarmActivity.KEY_ALARM_LABEL);
             MyAlarm alarm;
-            if (!label.isEmpty()){
-                alarm = new MyAlarm(eventId, time, label);
+            if (!label.isEmpty()) {
+                alarm = new MyAlarm(eventId, rawAlarmTime, label);
             } else {
-                alarm = new MyAlarm(eventId, time);
+                alarm = new MyAlarm(eventId, rawAlarmTime);
             }
             myAlarmList.add(alarm);
-            alarm.save();    // saved to DB :    http://satyan.github.io/sugar/getting-started.html
-            if (myAlarmList.size() > 0){
-                mEmptyMsg.setVisibility(View.GONE);
-            } else {
-                mEmptyMsg.setVisibility(View.VISIBLE);
-            }
+            alarm.save();    // save to DB :    http://satyan.github.io/sugar/getting-started.html
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -125,7 +115,28 @@ public class MainActivity extends AppCompatActivity implements
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+        loadAlarmsFromDb();
         super.onStart();
+    }
+
+
+    /*  Get all the items from the alarms.db
+       Source:  https://guides.codepath.com/android/Clean-Persistence-with-Sugar-ORM
+   */
+    private void loadAlarmsFromDb() {
+        if (myAlarmList == null) {
+            myAlarmList = new ArrayList<>();
+        } else {
+            myAlarmList.clear();
+        }
+        myAlarmList = MyAlarm.listAll(MyAlarm.class);
+        Log.d(TAG, MyAlarm.count(MyAlarm.class) + " alarms found");
+        if (myAlarmList.size() > 0) {
+            mEmptyMsg.setVisibility(View.GONE);
+        } else {
+            mEmptyMsg.setVisibility(View.VISIBLE);
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
     public void showLocationPermissionsPopUp() {

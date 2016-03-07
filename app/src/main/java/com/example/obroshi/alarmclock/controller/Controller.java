@@ -46,7 +46,7 @@ public class Controller {
     }
 
     public interface onAlarmAdded{
-        public void onAlarmAdded(String eventId, String time, String label);
+        public void onAlarmAdded(String eventId, long rawAlarmTime, String label);
     }
 
     public static Controller getInstance() {
@@ -80,7 +80,7 @@ public class Controller {
         return mDataStorage.getCurrentLat();
     }
 
-    public void calculateWakeUp(int mOriginMinutes, int mDestinationMinutes, Controller.WakeUpDataCallback callback){
+    public void calculateWakeUp(long mOriginMinutes, long mDestinationMinutes, Controller.WakeUpDataCallback callback){
         mWakeUpCalculation.getWakeUpTime(mOriginMinutes, mDestinationMinutes, callback);
     }
 

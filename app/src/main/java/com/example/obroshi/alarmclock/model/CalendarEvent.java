@@ -22,7 +22,7 @@ public class CalendarEvent implements Parcelable {
     private final String mCalendarName;
     private final int mCalendarColor;
     private final DateTime mDate;
-    private String mAlarmTime;
+    private long mRawAlarmTime;
     private boolean mHasAlarm;
 
     public CalendarEvent(String calendar_ID, String event_ID, String title, long rawStartingTime, String endingTime, String location, String description, String calendarName, int calendarColor) {
@@ -47,7 +47,7 @@ public class CalendarEvent implements Parcelable {
         this.mLocation = in.readString();
         this.mDescription = in.readString();
         this.mCalendarName = in.readString();
-        this.mAlarmTime = in.readString();
+        this.mRawAlarmTime = in.readLong();
         this.mHasAlarm = (1 == in.readInt());
         this.mCalendarColor = in.readInt();
         this.mRawStartingTime = in.readLong();
@@ -74,19 +74,18 @@ public class CalendarEvent implements Parcelable {
         this.mHasAlarm = mHasAlarm;
     }
 
-    public String getAlarmTime() {
-        return mAlarmTime;
+    public long getAlarmTime() {
+        return mRawAlarmTime;
     }
 
-    public void setAlarmTime(String mAlarmTime) {
-        this.mAlarmTime = mAlarmTime;
+    public void setAlarmTime(long mAlarmTime) {
+        this.mRawAlarmTime = mAlarmTime;
         this.mHasAlarm = true;
     }
 
     public String getCalendarName() {
         return mCalendarName;
     }
-
 
     public String getCalendar_ID() {
         return mCalendarID;
@@ -144,7 +143,7 @@ public class CalendarEvent implements Parcelable {
         dest.writeString(mLocation);
         dest.writeString(mDescription);
         dest.writeString(mCalendarName);
-        dest.writeString(mAlarmTime);
+        dest.writeLong(mRawAlarmTime);
         dest.writeInt(mHasAlarm ? 1 : 0);
         dest.writeInt(mCalendarColor);
         dest.writeLong(mRawStartingTime);

@@ -35,14 +35,14 @@ public class AlarmsAdapter extends RecyclerView.Adapter<AlarmsAdapter.AlarmViewH
     @Override
     public void onBindViewHolder(AlarmViewHolder holder, int position) {
         MyAlarm alarm = mAlarmsList.get(position);
-        holder.alarm.setText(alarm.getAlarmTime());
+        holder.alarm.setText(alarm.getFormattedAlarmTime());
         holder.label.setText(alarm.getAlarmLabel());
         holder.alarmSwitch.setChecked(true);
     }
 
     @Override
     public int getItemCount() {
-        return mAlarmsList.size();
+        return (mAlarmsList != null ? mAlarmsList.size(): 0);
     }
 
 

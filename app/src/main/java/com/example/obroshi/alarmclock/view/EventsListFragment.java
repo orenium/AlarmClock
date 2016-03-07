@@ -60,9 +60,6 @@ public class EventsListFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-//        setEmptyText("No Events");
-//        setListAdapter(mAdapter);
-//        setListShown(false);
     }
 
     @Override

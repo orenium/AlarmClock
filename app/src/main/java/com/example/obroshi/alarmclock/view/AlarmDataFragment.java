@@ -123,7 +123,7 @@ public class AlarmDataFragment extends Fragment {
                     Controller.getInstance().setDurationInTrafficValue(durationInTrafficValue);
                     Controller.getInstance().setDurationValue(durationValue);
 
-                    Controller.getInstance().calculateWakeUp(mOriginMinutes, mDestinationMinutes, new Controller.WakeUpDataCallback() {
+                    Controller.getInstance().calculateWakeUp((long) mOriginMinutes, (long) mDestinationMinutes, new Controller.WakeUpDataCallback() {
                         @Override
                         public void onWakeUpTimeReceived(long rawWakeupTime, final String formattedWakupTime, final String hours, final String minutes) {
 //                            Toast.makeText(getContext(), "Duration: " + durationText + " (" + durationInTrafficText + " with traffic)", Toast.LENGTH_LONG).show();
@@ -140,7 +140,7 @@ public class AlarmDataFragment extends Fragment {
 //                                    startActivity(intent);
 
                                     if (mAddAlarmListener != null) {
-                                        mAddAlarmListener.onAlarmAdded(mEvent.getEvent_ID(), formattedWakupTime, mTitle.getText().toString());
+                                        mAddAlarmListener.onAlarmAdded(mEvent.getEvent_ID(), mEvent.getAlarmTime(), mTitle.getText().toString());
                                     }
 
                                 }
@@ -180,6 +180,7 @@ public class AlarmDataFragment extends Fragment {
     }
 
     private void setDetails(long rawWakeupTime, String wakeUpTime, String durationValue, String durationText, int originMinutes) {
+        mEvent.setAlarmTime(rawWakeupTime);
         mDetailsWakeUp.setText("Wake Up at " + wakeUpTime);
         DateTime wakeupTime = new DateTime(rawWakeupTime);
         int hours = wakeupTime.plusMinutes(originMinutes).getHourOfDay();
@@ -216,7 +217,6 @@ public class AlarmDataFragment extends Fragment {
                     departure_time,
                     null, callback);
 
-
         } else { // if the event's address is not valid
             mWakeUpTime.setVisibility(View.INVISIBLE);
             mAddAlarmBtn.setVisibility(View.INVISIBLE);
@@ -238,28 +238,30 @@ public class AlarmDataFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             this.mEvent = args.getParcelable(KEY_EVENT);
-            mTitle.setText(this.mEvent.getTitle());
-            mMonthInYear.setText(DisplayHelper.getMonthShortName(mMonthInYear, this.mEvent.getMonthOfYear()));
-            mDayInMonth.setText(DisplayHelper.getDayInMonth(this.mEvent.getDayInMonth()));
-            mFormattedStartTime.setText(this.mEvent.getStartingTime());
-            if (TextUtils.isEmpty(this.mEvent.getEndingTime())) {
-                mEndTime.setVisibility(View.GONE);
-            } else {
-                mEndTime.setVisibility(View.VISIBLE);
-                mEndTime.setText(String.format(" - %s" ,this.mEvent.getEndingTime()));
-            }
-            mDivider.setBackgroundColor(this.mEvent.getCalendarColor());
-            String location = this.mEvent.getLocation();
-            if (location.isEmpty()) {
-                mLocation.setVisibility(View.GONE);
-                mIsAddressValid = false;
+            if (mEvent != null) {
+                mTitle.setText(this.mEvent.getTitle());
+                mMonthInYear.setText(DisplayHelper.getMonthShortName(mMonthInYear, this.mEvent.getMonthOfYear()));
+                mDayInMonth.setText(DisplayHelper.getDayInMonth(this.mEvent.getDayInMonth()));
+                mFormattedStartTime.setText(this.mEvent.getStartingTime());
+                if (TextUtils.isEmpty(this.mEvent.getEndingTime())) {
+                    mEndTime.setVisibility(View.GONE);
+                } else {
+                    mEndTime.setVisibility(View.VISIBLE);
+                    mEndTime.setText(String.format(" - %s", this.mEvent.getEndingTime()));
+                }
+                mDivider.setBackgroundColor(this.mEvent.getCalendarColor());
+                String location = this.mEvent.getLocation();
+                if (location.isEmpty()) {
+                    mLocation.setVisibility(View.GONE);
+                    mIsAddressValid = false;
 //                showGooglePlacesDialog();
-            } else {
-                mIsAddressValid = getLatLongFromAddress(location);
-                mLocation.setText(location);
+                } else {
+                    mIsAddressValid = getLatLongFromAddress(location);
+                    mLocation.setText(location);
+                }
+                Controller.getInstance().setRawStartingTime(this.mEvent.getRawStartingTime());
             }
         }
-        Controller.getInstance().setRawStartingTime(this.mEvent.getRawStartingTime());
     }
 
     @Override
