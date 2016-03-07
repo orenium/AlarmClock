@@ -1,42 +1,48 @@
 package com.example.obroshi.alarmclock.view;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.obroshi.alarmclock.R;
 import com.example.obroshi.alarmclock.controller.Controller;
-import com.example.obroshi.alarmclock.model.CalendarEvent;
-import com.example.obroshi.alarmclock.model.Constants;
+import com.example.obroshi.alarmclock.model.MyAlarm;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, Controller.onEventSelectedListener, Controller.onAlarmAdded {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private final String TAG = MainActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
     private Controller.LocationCallback mLocationCallback;
-    private Fragment mFragment;
-    private FloatingActionButton mFab;
-    private FragmentManager mFragmentManager;
 
     final int REQUEST_CODE_ASK_LOCATION_PERMISSIONS = 111;
     final int REQUEST_CODE_ASK_READ_CALENDAR_PERMISSIONS = 123;
+    final int ADD_ALARM_ACTIVITY_REQUEST_CODE = 123;
+
+    private RecyclerView mRecyclerView;
+    private AlarmsAdapter mAdapter;
+    private List<MyAlarm> myAlarmList = new ArrayList<>();
+
+    private TextView mEmptyMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,20 +51,20 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mFragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = mFragmentManager.beginTransaction();
-        mFragment = new AlarmsListFragment();
-        ft.add(R.id.container, mFragment, "AlarmsListFragment")
-                .commit();
-        mFab = (FloatingActionButton) findViewById(R.id.addAlarmFab);
+        mRecyclerView = (RecyclerView) findViewById(R.id.alarmsRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.hasFixedSize();
+        mAdapter = new AlarmsAdapter(MainActivity.this, myAlarmList);
+        mRecyclerView.setAdapter(mAdapter);
+        mEmptyMsg = (TextView)findViewById(R.id.noAlarmsMsg);
+
+        FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.addAlarmFab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentTransaction ft = mFragmentManager.beginTransaction();
-                mFragment = new EventsListFragment();
-                ft.replace(R.id.container, mFragment)
-                        .addToBackStack(null)
-                        .commit();
+                Intent intent = new Intent(MainActivity.this, AddAlarmActivity.class);
+                startActivityForResult(intent, ADD_ALARM_ACTIVITY_REQUEST_CODE);
             }
         });
 
@@ -82,6 +88,28 @@ public class MainActivity extends AppCompatActivity implements
             }
         };
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ADD_ALARM_ACTIVITY_REQUEST_CODE
+                && resultCode == RESULT_OK){
+            String time = data.getStringExtra(AlarmDataFragment.KEY_ALARM_TIME);
+            String label = data.getStringExtra(AlarmDataFragment.KEY_ALARM_LABEL);
+            if (!label.isEmpty()){
+                myAlarmList.add(new MyAlarm(time, label));
+            } else {
+                myAlarmList.add(new MyAlarm(time));
+            }
+            if (myAlarmList.size() > 0){
+                mEmptyMsg.setVisibility(View.GONE);
+            } else {
+                mEmptyMsg.setVisibility(View.VISIBLE);
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
 
     @Override
     protected void onStart() {
@@ -129,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -171,73 +198,4 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(TAG, "Failed to Connected to Google Play Services");
     }
 
-    @Override
-    public void onEventSelected(CalendarEvent event) {
-        mFragment = AlarmDataFragment.getFragment(event);
-        FragmentTransaction ft = mFragmentManager.beginTransaction();
-        ft.replace(R.id.container, mFragment).addToBackStack(null).commit();
-    }
-
-    @Override
-    public void onLocationNotValid() {
-//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-
-        mFragment = new SearchAddressFragment();
-//        getSupportFragmentManager().beginTransaction().replace(R.id.container, mFragment).addToBackStack("SearchAddressFragment").commit();
-
-//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                // TODO: Get info about the selected place.
-//                Log.d(TAG, "Place: " + place.getName());
-//
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                // TODO: Handle the error.
-//                Log.d(TAG, "An error occurred: " + status);
-//            }
-//        });
-    }
-
-    @Override
-    public void onAlarmAdded(String time, String label) {
-        mFragment = new AlarmsListFragment();
-        Bundle args = new Bundle();
-        args.putString(AlarmsListFragment.ALARM_TIME, time);
-        args.putString(AlarmsListFragment.LABEL, label);
-        mFragment.setArguments(args);
-//        if (mFragmentManager.findFragmentByTag("AlarmsListFragment") == null)
-        FragmentTransaction ft = mFragmentManager.beginTransaction();
-        if (mFragmentManager.findFragmentByTag("AlarmsListFragment") != null)
-            ft.replace(R.id.container, mFragment).commit();
-        else {
-
-        }
-    }
-
-//    @Override
-//    public void onLocationChanged(Location location) {
-//        double lat = location.getAltitude();
-//        double lng = location.getLongitude();
-//        Log.d(TAG, "Location updated: " + lat + ", " + lng);
-//        Toast.makeText(MainActivity.this,"Location updated: " + lat + ", " + lng, Toast.LENGTH_SHORT).show();
-//    }
-//
-//    @Override
-//    public void onStatusChanged(String provider, int status, Bundle extras) {
-//
-//    }
-//
-//    @Override
-//    public void onProviderEnabled(String provider) {
-//
-//    }
-//
-//    @Override
-//    public void onProviderDisabled(String provider) {
-//
-//    }
 }

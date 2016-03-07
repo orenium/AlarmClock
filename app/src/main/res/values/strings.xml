@@ -45,4 +45,8 @@
     <string name="month_oct">oct</string>
     <string name="month_nov">nov</string>
     <string name="month_dec">dec</string>
+    <string name="title_activity_tutorial">TutorialActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_alarms">AlarmsActivity</string>
+    <string name="no_alarms_msg">No alarms yet...</string>
 </resources>

@@ -1,0 +1,90 @@
+package com.example.obroshi.alarmclock.view;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+
+import com.example.obroshi.alarmclock.R;
+import com.example.obroshi.alarmclock.controller.Controller;
+import com.example.obroshi.alarmclock.model.CalendarEvent;
+
+public class AddAlarmActivity extends AppCompatActivity implements Controller.onEventSelectedListener, Controller.onAlarmAdded{
+
+    private final String TAG = AddAlarmActivity.class.getSimpleName();
+    private Fragment mFragment;
+    private FragmentManager mFragmentManager;
+    final int REQUEST_CODE_ASK_LOCATION_PERMISSIONS = 111;
+    final int REQUEST_CODE_ASK_READ_CALENDAR_PERMISSIONS = 123;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_alarm);
+
+        mFragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = mFragmentManager.beginTransaction();
+        mFragment = new EventsListFragment();
+        ft.add(R.id.container, mFragment, "EventsListFragment").commit();
+
+
+    }
+
+
+    @Override
+    public void onEventSelected(CalendarEvent event) {
+        mFragment = AlarmDataFragment.getFragment(event);
+        FragmentTransaction ft = mFragmentManager.beginTransaction();
+        ft.replace(R.id.container, mFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onLocationNotValid() {
+//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        mFragment = new SearchAddressFragment();
+//        getSupportFragmentManager().beginTransaction().replace(R.id.container, mFragment).addToBackStack("SearchAddressFragment").commit();
+
+//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                // TODO: Get info about the selected place.
+//                Log.d(TAG, "Place: " + place.getName());
+//
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//                // TODO: Handle the error.
+//                Log.d(TAG, "An error occurred: " + status);
+//            }
+//        });
+    }
+
+    @Override
+    public void onAlarmAdded(String time, String label) {
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(AlarmDataFragment.KEY_ALARM_TIME, time);
+        returnIntent.putExtra(AlarmDataFragment.KEY_ALARM_TIME, label);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+
+
+//        mFragment = new AlarmsListFragment();
+//        Bundle args = new Bundle();
+//        mFragment.setArguments(args);
+//        if (mFragmentManager.findFragmentByTag("AlarmsListFragment") == null)
+//        FragmentTransaction ft = mFragmentManager.beginTransaction();
+//        if (mFragmentManager.findFragmentByTag("AlarmsListFragment") != null)
+//            ft.replace(R.id.container, mFragment).commit();
+//        else {
+//
+//        }
+    }
+}

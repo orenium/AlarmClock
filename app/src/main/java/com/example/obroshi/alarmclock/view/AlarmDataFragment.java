@@ -37,6 +37,8 @@ public class AlarmDataFragment extends Fragment {
 
     private static final String TAG = AlarmDataFragment.class.getSimpleName();
     private static final String KEY_EVENT = "event";
+    public static final String KEY_ALARM_TIME = "alarmTime";
+    public static final String KEY_ALARM_LABEL = "alarmLabel";
 
     private CalendarEvent mEvent;
     private LinearLayout mEventInfoLayout;
@@ -138,6 +140,7 @@ public class AlarmDataFragment extends Fragment {
 //                                    intent.putExtra(AlarmClock.EXTRA_HOUR, Integer.valueOf(hours));
 //                                    intent.putExtra(AlarmClock.EXTRA_MINUTES, Integer.valueOf(minutes));
 //                                    startActivity(intent);
+
                                     if (mAddAlarmListener != null) {
                                         mAddAlarmListener.onAlarmAdded(formattedWakupTime, mTitle.getText().toString());
                                     }
