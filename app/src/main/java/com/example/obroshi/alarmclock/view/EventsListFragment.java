@@ -72,8 +72,8 @@ public class EventsListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         final LinearLayout emptyView = (LinearLayout) view.findViewById(R.id.emptyViewNoEvents);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.eventsRecyclerView);
-        mOriginMinutes = (EditText) view.findViewById(R.id.originTime);
-        mDestinationMinutes = (EditText) view.findViewById(R.id.destinationTime);
+//        mOriginMinutes = (EditText) view.findViewById(R.id.originTime);
+//        mDestinationMinutes = (EditText) view.findViewById(R.id.destinationTime);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -87,34 +87,34 @@ public class EventsListFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
 
         // Check if the user already entered custom time settings
-        final SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        if (sharedPref.contains(Constants.ORIGIN_TIME))
-            mOriginMinutes.setText(String.valueOf(sharedPref.getInt(Constants.ORIGIN_TIME, 0)));
-        if (sharedPref.contains(Constants.DESTINATION_TIME))
-            mDestinationMinutes.setText(String.valueOf(sharedPref.getInt(Constants.DESTINATION_TIME, 0)));
+//        final SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+//        if (sharedPref.contains(Constants.ORIGIN_TIME))
+//            mOriginMinutes.setText(String.valueOf(sharedPref.getInt(Constants.ORIGIN_TIME, 0)));
+//        if (sharedPref.contains(Constants.DESTINATION_TIME))
+//            mDestinationMinutes.setText(String.valueOf(sharedPref.getInt(Constants.DESTINATION_TIME, 0)));
 
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
                 mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 // input validation (make sure its a number)
-                if ((TextUtils.isDigitsOnly(mDestinationMinutes.getText().toString()))
-                        && (TextUtils.isDigitsOnly(mDestinationMinutes.getText().toString()))) {
-                    int originTime = mOriginMinutes.getText().length() > 0 ? Integer.parseInt(mOriginMinutes.getText().toString()) : 0;
-                    int destinationTime = mDestinationMinutes.getText().length() > 0 ? Integer.parseInt(mDestinationMinutes.getText().toString()) : 0;
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putInt(Constants.ORIGIN_TIME, originTime);
-                    editor.putInt(Constants.DESTINATION_TIME, destinationTime);
-                    editor.commit();
-                    Log.d(TAG, "Time in origin is " + mOriginMinutes.getText() + " minutes and time in destination is " + mDestinationMinutes.getText() + " minutes");
-                    Log.d(TAG, "Item " + position + " was clicked");
+//                if ((TextUtils.isDigitsOnly(mOriginMinutes.getText().toString()))
+//                        && (TextUtils.isDigitsOnly(mDestinationMinutes.getText().toString()))) {
+//                    int originTime = mOriginMinutes.getText().length() > 0 ? Integer.parseInt(mOriginMinutes.getText().toString()) : 0;
+//                    int destinationTime = mDestinationMinutes.getText().length() > 0 ? Integer.parseInt(mDestinationMinutes.getText().toString()) : 0;
+//                    SharedPreferences.Editor editor = sharedPref.edit();
+//                    editor.putInt(Constants.ORIGIN_TIME, originTime);
+//                    editor.putInt(Constants.DESTINATION_TIME, destinationTime);
+//                    editor.commit();
+//                    Log.d(TAG, "Time in origin is " + mOriginMinutes.getText() + " minutes and time in destination is " + mDestinationMinutes.getText() + " minutes");
+//                    Log.d(TAG, "Item " + position + " was clicked");
                     CalendarEvent event = mEventsList.get(position);
                     if (mSelectedListener != null) {
                         mSelectedListener.onEventSelected(event);
                     }
-                } else {
-                    Log.d(TAG, "Invalid input");
-                }
+//                } else {
+//                    Log.d(TAG, "Invalid input");
+//                }
             }
 
             @Override

@@ -91,6 +91,17 @@ public class GetCalendarData {
                     null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
+                    int calIdColumnIndex = cursor.getColumnIndex(CalendarContract.Events.DTSTART);
+                    int eventIdColumnIndex = cursor.getColumnIndex(CalendarContract.Events._ID);
+                    int eventTitleColumnIndex = cursor.getColumnIndex(CalendarContract.Events.TITLE);
+                    int calColorColumnIndex = cursor.getColumnIndex(CalendarContract.Events.CALENDAR_COLOR);
+                    int statusColumnIndex = cursor.getColumnIndex(CalendarContract.Events.SELF_ATTENDEE_STATUS);
+                    int endTimeColumnIndex = cursor.getColumnIndex(CalendarContract.Events.DTEND);
+                    int rRuleColumnIndex = cursor.getColumnIndex(CalendarContract.Events.RRULE);
+                    int locationColumnIndex = cursor.getColumnIndex(CalendarContract.Events.EVENT_LOCATION);
+                    int descriptionColumnIndex = cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION);
+                    int calDisplayNameColumnIndex = cursor.getColumnIndex(CalendarContract.Events.CALENDAR_DISPLAY_NAME);
+
                     do {
                         // Skipping all day events
                         int isAllDay = cursor.getInt(cursor.getColumnIndex(CalendarContract.Events.ALL_DAY));
@@ -99,20 +110,20 @@ public class GetCalendarData {
                             // check for only future events
                             Long currentTime = System.currentTimeMillis();
                             if (startTime > currentTime) {
-                                String cal_id = cursor.getString(cursor.getColumnIndex(CalendarContract.Events.CALENDAR_ID));
-                                String event_id = cursor.getString(cursor.getColumnIndex(CalendarContract.Events._ID));
-                                String title = cursor.getString(cursor.getColumnIndex(CalendarContract.Events.TITLE));
-                                int calendarColor = cursor.getInt(cursor.getColumnIndex(CalendarContract.Events.CALENDAR_COLOR));
-                                int status = cursor.getInt(cursor.getColumnIndex(CalendarContract.Events.SELF_ATTENDEE_STATUS));
+                                String cal_id = cursor.getString(calIdColumnIndex);
+                                String event_id = cursor.getString(eventIdColumnIndex);
+                                String title = cursor.getString(eventTitleColumnIndex);
+                                int calendarColor = cursor.getInt(calColorColumnIndex);
+                                int status = cursor.getInt(statusColumnIndex);
                                 // check if the event's data is valid
                                 if ((event_id != null) && (title != null) && (startTime > 0) && (status != CalendarContract.Events.STATUS_CANCELED)) {
-                                    String endTime = cursor.getString(cursor.getColumnIndex(CalendarContract.Events.DTEND));
+                                    String endTime = cursor.getString(endTimeColumnIndex);
 
-                                    String rRule = cursor.getString(cursor.getColumnIndex(CalendarContract.Events.RRULE));
+                                    String rRule = cursor.getString(rRuleColumnIndex);
 
-                                    String location = cursor.getString(cursor.getColumnIndex(CalendarContract.Events.EVENT_LOCATION));
-                                    String description = cursor.getString(cursor.getColumnIndex(CalendarContract.Events.DESCRIPTION));
-                                    String CalendarName = cursor.getString(cursor.getColumnIndex(CalendarContract.Events.CALENDAR_DISPLAY_NAME));
+                                    String location = cursor.getString(locationColumnIndex);
+                                    String description = cursor.getString(descriptionColumnIndex);
+                                    String CalendarName = cursor.getString(calDisplayNameColumnIndex);
 //                                    Log.d(TAG, "Calendar id: " + cal_id + " Event id: " + event_id + ": " + title + " status: " + status);
                                     CalendarEvent event = new CalendarEvent(cal_id, event_id, title, startTime, endTime, location, description, CalendarName, calendarColor);
                                     eventsList.add(event);

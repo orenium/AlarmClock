@@ -206,8 +206,8 @@ public class AlarmDataFragment extends Fragment {
             LatLng destinationLatLng = new LatLng(mDestinationLatitude, mDestinationLongitude);
             String departure_time = "";
 
-            // Get user settings from shared prefs
-            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            // Get user time(origin & destination) from shared prefs
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
             mOriginMinutes = sharedPref.getInt(Constants.ORIGIN_TIME, 0);
             mDestinationMinutes = sharedPref.getInt(Constants.DESTINATION_TIME, 0);
 

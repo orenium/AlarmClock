@@ -31,6 +31,14 @@
         android:hint="Label"
         android:textSize="18sp" />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/alarmLabel"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:src="@android:drawable/ic_menu_delete"/>
+
     <View
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
