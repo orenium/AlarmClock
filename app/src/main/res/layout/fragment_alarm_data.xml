@@ -18,8 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
             android:alpha="0.75"
-            android:elevation="5dp"
             android:background="@color/rawBackground"
+            android:elevation="5dp"
             android:orientation="horizontal"
             android:padding="8dp">
 
@@ -115,9 +115,9 @@
             android:id="@+id/wakeUpTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/eventInfoLayout"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
-            android:layout_below="@+id/eventInfoLayout"
             android:fontFamily="sans-serif-thin"
             android:gravity="center"
             android:hint="Wakeup time"
@@ -137,25 +137,13 @@
 
         <LinearLayout
             android:id="@+id/detailsLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:orientation="vertical"
             android:padding="12dp">
-
-            <!--<Button-->
-            <!--android:id="@+id/addAlarm"-->
-            <!--style="@style/Widget.AppCompat.Button.Borderless"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:text="Add alarm"-->
-            <!--android:theme="@style/MyButton"-->
-            <!--android:layout_marginBottom="45dp"-->
-            <!--android:visibility="visible" />-->
-
 
             <TextView
                 android:id="@+id/details"

@@ -1,6 +1,7 @@
 package com.example.obroshi.alarmclock.view;
 
 import android.app.Activity;
+import android.app.TimePickerDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.obroshi.alarmclock.R;
@@ -31,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import org.joda.time.DateTime;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class AlarmDataFragment extends Fragment {
@@ -185,14 +188,12 @@ public class AlarmDataFragment extends Fragment {
         DateTime wakeupTime = new DateTime(rawWakeupTime);
         int hours = wakeupTime.plusMinutes(originMinutes).getHourOfDay();
         int minutes = wakeupTime.plusMinutes(originMinutes).getMinuteOfHour();
-        mDetailsLeaveHome.setText("Leave home at " + (hours < 10 ? "0" + hours : hours)
-                + ":" + (minutes < 10 ? "0" + minutes : minutes));
+        mDetailsLeaveHome.setText("Leave home at " + String.format("%02d:%02d", hours, minutes));
         mDetailsDuration.setText("Driving duration is " + durationText);
-        DateTime eta = new DateTime(rawWakeupTime + originMinutes * 60 * 1000 + Integer.valueOf(durationValue) * 1000);
+        final DateTime eta = new DateTime(rawWakeupTime + originMinutes * 60 * 1000 + Integer.valueOf(durationValue) * 1000);
         hours = eta.getHourOfDay();
         minutes = eta.getMinuteOfHour();
-        mDetailsLeaveETA.setText("ETA: " + (hours < 10 ? "0" + hours : hours)
-                + ":" + (minutes < 10 ? "0" + minutes : minutes));
+        mDetailsLeaveETA.setText("ETA: " + String.format("%02d:%02d", hours, minutes));
         mDetailsEventStart.setText("Event starts at " + mFormattedStartTime.getText());
         mDetailsLayout.setVisibility(View.VISIBLE);
     }
