@@ -54,7 +54,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="welcome_text">welcome!</string>
     <string name="welcome_start">Lets Start!</string>
-    <string name="welcome_msg">This application works best when it customised to you according to your individual times!</string>
+    <string name="welcome_msg">This application works best when it customized to you according to your individual times!</string>
     <string name="morning_time_txt">How long takes your morning routine? (In minutes)</string>
     <string name="times_title">Set your times</string>
     <string name="set_times">set</string>

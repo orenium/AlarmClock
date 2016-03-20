@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,42 +58,54 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.alarmsRecyclerView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.hasFixedSize();
-        mAdapter = new AlarmsAdapter(MainActivity.this, myAlarmList);
-        mRecyclerView.setAdapter(mAdapter);
-        mEmptyMsg = (TextView) findViewById(R.id.noAlarmsMsg);
+        final SharedPreferences sharedPref = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
+        boolean hasTimes = sharedPref.getBoolean(Constants.HAS_USER_TIMES, false);
+        if (!hasTimes) {
+            Log.d(TAG, "This is not 1st launch, continuing to alarms list activity");
+            Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
+//            Toast.makeText(this, "Has times: " + sharedPref.contains(Constants.HAS_USER_TIMES), Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+            finish();
+        } else {
 
-        FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.addAlarmFab);
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddAlarmActivity.class);
-                startActivityForResult(intent, ADD_ALARM_ACTIVITY_REQUEST_CODE);
+            mRecyclerView = (RecyclerView) findViewById(R.id.alarmsRecyclerView);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+            mRecyclerView.setLayoutManager(layoutManager);
+            mRecyclerView.hasFixedSize();
+            mAdapter = new AlarmsAdapter(MainActivity.this, myAlarmList);
+            mRecyclerView.setAdapter(mAdapter);
+            mEmptyMsg = (TextView) findViewById(R.id.noAlarmsMsg);
+
+            FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.addAlarmFab);
+            mFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, AddAlarmActivity.class);
+                    startActivityForResult(intent, ADD_ALARM_ACTIVITY_REQUEST_CODE);
+                }
+            });
+
+            if (mGoogleApiClient == null) {
+                // Create a GoogleApiClient instance
+                mGoogleApiClient = new GoogleApiClient.Builder(this)
+                        .addConnectionCallbacks(this)
+                        .addApi(LocationServices.API)
+                        .addApi(Places.GEO_DATA_API)
+                        .addApi(Places.PLACE_DETECTION_API)
+                        .addOnConnectionFailedListener(this)
+                        .build();
             }
-        });
 
-        if (mGoogleApiClient == null) {
-            // Create a GoogleApiClient instance
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addApi(LocationServices.API)
-                    .addApi(Places.GEO_DATA_API)
-                    .addApi(Places.PLACE_DETECTION_API)
-                    .addOnConnectionFailedListener(this)
-                    .build();
+            mLocationCallback = new Controller.LocationCallback() {
+                @Override
+                public void onCurrentLocationReceived(double lat, double lng) {
+                    Controller.getInstance().setCurrentLat(lat);
+                    Controller.getInstance().setCurrentLng(lng);
+                    showCalendarPermissionsPopUp();
+                }
+            };
+
         }
-
-        mLocationCallback = new Controller.LocationCallback() {
-            @Override
-            public void onCurrentLocationReceived(double lat, double lng) {
-                Controller.getInstance().setCurrentLat(lat);
-                Controller.getInstance().setCurrentLng(lng);
-                showCalendarPermissionsPopUp();
-            }
-        };
     }
 
     @Override
@@ -110,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements
             myAlarmList.add(alarm);
             alarm.save();    // save to DB :    http://satyan.github.io/sugar/getting-started.html
             mAdapter.notifyDataSetChanged();
+
         }
     }
 
