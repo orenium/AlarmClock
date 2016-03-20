@@ -56,12 +56,23 @@ public class AlarmsAdapter extends RecyclerView.Adapter<AlarmsAdapter.AlarmViewH
             mAlarmsList.remove(position);
             notifyItemRemoved(position);
             showUndoSnackBar(view, alarm);
+            updateList();
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
             Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
+    }
+
+    private void updateList() {
+        mAlarmsList.clear();
+        long count = MyAlarm.count(MyAlarm.class);
+        List<MyAlarm> list = MyAlarm.listAll(MyAlarm.class);
+        for (int i = 0; i < count; i++) {
+            mAlarmsList.add(list.get(i));
+        }
+        notifyDataSetChanged();
     }
 
     private void showUndoSnackBar(View view, final MyAlarm alarm) {
