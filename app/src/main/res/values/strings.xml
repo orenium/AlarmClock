@@ -48,7 +48,7 @@
     <string name="title_activity_tutorial">TutorialActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_alarms">AlarmsActivity</string>
-    <string name="no_alarms_msg">No alarms yet...</string>
+    <string name="no_alarms_msg">No alarms...</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

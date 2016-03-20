@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/alarmTime"
@@ -27,23 +27,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/alarmTime"
-        android:textColor="@color/textColorPrimary"
         android:hint="Label"
+        android:textColor="@color/textColorPrimary"
         android:textSize="18sp" />
 
     <ImageView
+        android:id="@+id/deleteAlarmBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/alarmLabel"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:src="@android:drawable/ic_menu_delete"/>
+        android:src="@android:drawable/ic_menu_delete" />
 
     <View
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/alarmLabel"
+        android:layout_marginTop="10dp"
         android:background="@color/textColorSecondary"></View>
 
 </RelativeLayout>

@@ -3,9 +3,11 @@ package com.example.obroshi.alarmclock.view;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.obroshi.alarmclock.R;
@@ -33,30 +35,41 @@ public class AlarmsAdapter extends RecyclerView.Adapter<AlarmsAdapter.AlarmViewH
     }
 
     @Override
-    public void onBindViewHolder(AlarmViewHolder holder, int position) {
-        MyAlarm alarm = mAlarmsList.get(position);
+    public void onBindViewHolder(AlarmViewHolder holder, final int position) {
+        final MyAlarm alarm = mAlarmsList.get(position);
         holder.alarm.setText(alarm.getFormattedAlarmTime());
         holder.label.setText(alarm.getAlarmLabel());
         holder.alarmSwitch.setChecked(true);
+        holder.deleteAlarmImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long id = alarm.getId();
+                mAlarmsList.remove(position);
+                notifyItemRemoved(position);
+                alarm.delete();
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return (mAlarmsList != null ? mAlarmsList.size(): 0);
+        return (mAlarmsList != null ? mAlarmsList.size() : 0);
     }
 
 
-    public class AlarmViewHolder extends RecyclerView.ViewHolder{
+    public class AlarmViewHolder extends RecyclerView.ViewHolder {
 
         protected TextView alarm;
         protected TextView label;
         protected SwitchCompat alarmSwitch;
+        protected ImageView deleteAlarmImg;
 
         public AlarmViewHolder(View view) {
             super(view);
             alarm = (TextView) view.findViewById(R.id.alarmTime);
             label = (TextView) view.findViewById(R.id.alarmLabel);
             alarmSwitch = (SwitchCompat) view.findViewById(R.id.alarmSwitch);
+            deleteAlarmImg = (ImageView) view.findViewById(R.id.deleteAlarmBtn);
 
         }
     }

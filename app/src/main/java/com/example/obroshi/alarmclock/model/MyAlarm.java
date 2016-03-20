@@ -8,7 +8,6 @@ import org.joda.time.DateTime;
 
 public class MyAlarm extends SugarRecord{
 
-    private Long mId;
     private String mFormattedAlarmTime;
     private String mAlarmLabel;
     private long mRawAlarmTime;
@@ -21,14 +20,12 @@ public class MyAlarm extends SugarRecord{
     public MyAlarm(String eventsId, long rawAlarmTime){
         this.mEventId = eventsId;
         this.mRawAlarmTime = rawAlarmTime;
-//        mAlarmSwitch.setChecked(true);
     }
 
     public MyAlarm(String eventsId, long rawAlarmTime, String label){
         this.mEventId = eventsId;
         this.mRawAlarmTime = rawAlarmTime;
         this.mAlarmLabel = label;
-//        mAlarmSwitch.setChecked(true);
     }
 
     public String getFormattedAlarmTime() {
@@ -60,8 +57,5 @@ public class MyAlarm extends SugarRecord{
     public String getEventId() {
         return mEventId;
     }
-
-    public Long getId() {
-        return mId;
-    }
+    
 }
