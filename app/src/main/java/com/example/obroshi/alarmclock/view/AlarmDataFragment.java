@@ -42,25 +42,12 @@ public class AlarmDataFragment extends Fragment {
     private static final String KEY_EVENT = "event";
 
     private CalendarEvent mEvent;
-    private LinearLayout mEventInfoLayout;
-    private TextView mTitle;
-    private TextView mFormattedStartTime;
-    private TextView mMonthInYear;
-    private TextView mDayInMonth;
-    private TextView mEndTime;
-    private TextView mLocation;
+    private LinearLayout mEventInfoLayout, mDetailsLayout;
+    private TextView mTitle, mFormattedStartTime, mMonthInYear, mDayInMonth, mEndTime, mLocation;
     private View mDivider;
-    private int mOriginMinutes;
-    private int mDestinationMinutes;
-    private TextView mLocationMsg;
-    private TextView mWakeUpTime;
-    private TextView mDetailsWakeUp;
-    private TextView mDetailsLeaveHome;
-    private TextView mDetailsDuration;
-    private TextView mDetailsLeaveETA;
-    private TextView mDetailsEventStart;
-    private LinearLayout mDetailsLayout;
-    private ImageView mAddAlarmBtn;
+    private int mOriginMinutes, mDestinationMinutes;
+    private TextView mLocationMsg, mWakeUpTime, mDetailsWakeUp, mDetailsLeaveHome, mDetailsDuration;
+    private TextView mDetailsLeaveETA, mDetailsEventStart, mAddAlarmBtn;
 
     private Controller.onAlarmAdded mAddAlarmListener;
     private double mDestinationLatitude;
@@ -107,7 +94,7 @@ public class AlarmDataFragment extends Fragment {
         mDetailsDuration = (TextView) view.findViewById(R.id.detailsDuration);
         mDetailsLeaveETA = (TextView) view.findViewById(R.id.detailsETA);
         mDetailsEventStart = (TextView) view.findViewById(R.id.detailsEventStart);
-        mAddAlarmBtn = (ImageView) view.findViewById(R.id.addAlarmImage);
+        mAddAlarmBtn = (TextView) view.findViewById(R.id.addAlarmBtn);
 
         mEventInfoLayout.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -59,8 +59,10 @@
     <string name="times_title">Set your times</string>
     <string name="set_times">set</string>
     <string name="set_times_done">done</string>
-    <string name="destination_time_txt">How long (in minutes), would you like to get earlier to your events? (For example: If your appointment is at 10am and you want to be on get there at 9:45, set your answer to 15) </string>
+    <string name="destination_time_txt">How long (in minutes), would you like to get earlier to your events?</string>
+    <string name="destination_time_example">For example: If your appointment is at 10am and you want to be on get there at 9:45, set your answer to 15.</string>
     <string name="morning_time_hint">Morning Time</string>
     <string name="before_meeting_time_hint">Before meeting</string>
     <string name="select_event">Select an event:</string>
+    <string name="set_alarm_btn">Set alarm</string>
 </resources>
