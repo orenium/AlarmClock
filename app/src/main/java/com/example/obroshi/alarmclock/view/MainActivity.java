@@ -1,6 +1,8 @@
 package com.example.obroshi.alarmclock.view;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,14 +26,19 @@ import android.widget.Toast;
 
 import com.example.obroshi.alarmclock.R;
 import com.example.obroshi.alarmclock.controller.Controller;
+import com.example.obroshi.alarmclock.model.AlertReceiver;
 import com.example.obroshi.alarmclock.model.Constants;
 import com.example.obroshi.alarmclock.model.MyAlarm;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
+import com.orm.query.Select;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -136,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         loadAlarmsFromDb();
         super.onStart();
+        setAlarm();
     }
 
 
@@ -149,7 +157,8 @@ public class MainActivity extends AppCompatActivity implements
             myAlarmList.clear();
         }
         long count = MyAlarm.count(MyAlarm.class);
-        List<MyAlarm> list = MyAlarm.listAll(MyAlarm.class);
+        // get all alarms, sorted my Raw Alarm Time;
+        List<MyAlarm> list = MyAlarm.listAll(MyAlarm.class, "m_raw_alarm_time");
         for (int i = 0; i < count; i++) {
             myAlarmList.add(list.get(i));
         }
@@ -239,6 +248,18 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "Failed to Connected to Google Play Services");
+    }
+
+    public void setAlarm(){
+        Long alertTime = new GregorianCalendar().getTimeInMillis()+ 5*1000;
+
+        Intent alertIntent = new Intent(this, AlertReceiver.class);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, PendingIntent.getBroadcast(this, 1,
+                alertIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+
     }
 
 }
