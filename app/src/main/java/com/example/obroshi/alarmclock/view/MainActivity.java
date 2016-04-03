@@ -38,6 +38,7 @@ import com.orm.query.Select;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -61,10 +62,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         final SharedPreferences sharedPref = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE);
         boolean hasTimes = sharedPref.getBoolean(Constants.HAS_USER_TIMES, false);
         if (!hasTimes) {
@@ -73,46 +70,48 @@ public class MainActivity extends AppCompatActivity implements
 //            Toast.makeText(this, "Has times: " + sharedPref.contains(Constants.HAS_USER_TIMES), Toast.LENGTH_SHORT).show();
             startActivity(intent);
             finish();
-        } else {
-
-            mRecyclerView = (RecyclerView) findViewById(R.id.alarmsRecyclerView);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-            mRecyclerView.setLayoutManager(layoutManager);
-            mRecyclerView.hasFixedSize();
-            mAdapter = new AlarmsAdapter(MainActivity.this, myAlarmList);
-            mRecyclerView.setAdapter(mAdapter);
-            mEmptyMsg = (TextView) findViewById(R.id.noAlarmsMsg);
-
-            FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.addAlarmFab);
-            mFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(MainActivity.this, AddAlarmActivity.class);
-                    startActivityForResult(intent, ADD_ALARM_ACTIVITY_REQUEST_CODE);
-                }
-            });
-
-            if (mGoogleApiClient == null) {
-                // Create a GoogleApiClient instance
-                mGoogleApiClient = new GoogleApiClient.Builder(this)
-                        .addConnectionCallbacks(this)
-                        .addApi(LocationServices.API)
-                        .addApi(Places.GEO_DATA_API)
-                        .addApi(Places.PLACE_DETECTION_API)
-                        .addOnConnectionFailedListener(this)
-                        .build();
-            }
-
-            mLocationCallback = new Controller.LocationCallback() {
-                @Override
-                public void onCurrentLocationReceived(double lat, double lng) {
-                    Controller.getInstance().setCurrentLat(lat);
-                    Controller.getInstance().setCurrentLng(lng);
-                    showCalendarPermissionsPopUp();
-                }
-            };
-
+            return;
         }
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.alarmsRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.hasFixedSize();
+        mAdapter = new AlarmsAdapter(MainActivity.this, myAlarmList);
+        mRecyclerView.setAdapter(mAdapter);
+        mEmptyMsg = (TextView) findViewById(R.id.noAlarmsMsg);
+
+        FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.addAlarmFab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AddAlarmActivity.class);
+                startActivityForResult(intent, ADD_ALARM_ACTIVITY_REQUEST_CODE);
+            }
+        });
+
+        if (mGoogleApiClient == null) {
+            // Create a GoogleApiClient instance
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addApi(LocationServices.API)
+                    .addApi(Places.GEO_DATA_API)
+                    .addApi(Places.PLACE_DETECTION_API)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+        }
+
+        mLocationCallback = new Controller.LocationCallback() {
+            @Override
+            public void onCurrentLocationReceived(double lat, double lng) {
+                Controller.getInstance().setCurrentLat(lat);
+                Controller.getInstance().setCurrentLng(lng);
+                showCalendarPermissionsPopUp();
+            }
+        };
     }
 
     @Override
@@ -250,14 +249,12 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(TAG, "Failed to Connected to Google Play Services");
     }
 
-    public void setAlarm(){
-        Long alertTime = new GregorianCalendar().getTimeInMillis()+ 5*1000;
-
+    public void setAlarm() {
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.add(Calendar.SECOND, 5);
         Intent alertIntent = new Intent(this, AlertReceiver.class);
-
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, PendingIntent.getBroadcast(this, 1,
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), PendingIntent.getBroadcast(this, 1,
                 alertIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
     }

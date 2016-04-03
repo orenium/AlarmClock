@@ -10,11 +10,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-enum DownloadStatus {
-    IDLE, PROCESSING, NOT_INITIALISED, FAILED_OR_EMPTY, OK}
-
 public class GetRawData {
-
+    enum DownloadStatus {
+        IDLE, PROCESSING, NOT_INITIALISED, FAILED_OR_EMPTY, OK}
+    
     private final String TAG = GetRawData.class.getSimpleName();
     private String mRawUrl;
     private String mData;
