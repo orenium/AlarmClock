@@ -247,7 +247,8 @@ public class AlarmDataFragment extends Fragment {
                     mIsAddressValid = getLatLongFromAddress(location);
                     mLocation.setText(location);
                 }
-                Controller.getInstance().setRawStartingTime(this.mEvent.getRawStartingTime());
+                Controller.getInstance()
+                        .setRawStartingTime(this.mEvent.getRawStartingTime());
             }
         }
     }
