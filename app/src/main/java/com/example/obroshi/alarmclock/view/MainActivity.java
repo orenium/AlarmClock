@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements
         setAlarm();
     }
 
-
     /*  Get all the items from the alarms.db
        Source:  https://guides.codepath.com/android/Clean-Persistence-with-Sugar-ORM
    */
@@ -155,13 +154,13 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             myAlarmList.clear();
         }
-        long count = MyAlarm.count(MyAlarm.class);
+//        long count = MyAlarm.count(MyAlarm.class);
         // get all alarms, sorted my Raw Alarm Time;
         List<MyAlarm> list = MyAlarm.listAll(MyAlarm.class, "m_raw_alarm_time");
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < list.size(); i++) {
             myAlarmList.add(list.get(i));
         }
-        Log.d(TAG, count + " alarms found");
+        Log.d(TAG, list.size() + " alarms found");
         if (myAlarmList.size() > 0) {
             mEmptyMsg.setVisibility(View.GONE);
         } else {

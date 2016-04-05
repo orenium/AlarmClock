@@ -36,7 +36,7 @@
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver android:name=".model.AlertReceiver"/>
+        <receiver android:name=".model.AlertReceiver" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -53,12 +53,17 @@
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.example.obroshi.alarmclock" />
-        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <!--
+             ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <service
+            android:name=".controller.AlarmIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

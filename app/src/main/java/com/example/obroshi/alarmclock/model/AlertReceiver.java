@@ -12,11 +12,20 @@ import com.example.obroshi.alarmclock.view.MainActivity;
 
 public class AlertReceiver extends BroadcastReceiver {
 
+    private static final String EXTRA_ALARM_LABEL = "label";
 
+    public static Intent prepareForAlarm(Context context, MyAlarm alarm){
+        Intent intent = new Intent(context, AlertReceiver.class);
+        intent.putExtra(EXTRA_ALARM_LABEL, alarm.getAlarmLabel());
+        return intent;
+    }
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        createNotification(context, "Times up", "5 seconds has passed", "Alert");
+        createNotification(context,
+                intent.getStringExtra(EXTRA_ALARM_LABEL),
+                "5 seconds has passed",
+                "Alert");
 
     }
 
